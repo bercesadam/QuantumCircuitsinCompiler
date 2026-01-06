@@ -1,0 +1,86 @@
+#pragma once
+    #include "types.h"
+
+/// @file
+/// @brief Common single- and two-qubit gate matrices and helpers.
+///
+/**
+ * @details
+ * Provides common quantum gates as `constexpr` matrices:
+ *  - Identity, H, X, Y, Z, T, S, SWAP
+ * and the `identity_matrix<QBitCount>()` helper for arbitrary qubit counts.
+ */
+
+namespace Gates
+{
+    /// @brief Mathematical constants used for gate definitions
+    constexpr double sqrt2 = 1.4142135623730950;
+    constexpr double inv_sqrt2 = 1.0 / sqrt2;
+
+    /**
+     * @brief Produce an identity matrix for `QBitCount` qubits (2^QBitCount × 2^QBitCount).
+     * @tparam QBitCount  Number of qubits.
+     * @return A diagonal identity matrix with ones on the main diagonal.
+     */
+    template<dimension_t QBitCount>
+    constexpr matrix_t<ConstexprMath::pow2(QBitCount), ConstexprMath::pow2(QBitCount)> identity_matrix() noexcept
+    {
+        constexpr dimension_t Dim = ConstexprMath::pow2(QBitCount);
+
+        // Zero-initialize and set the diagonal entries to 1.0
+        matrix_t<Dim, Dim> identity = {};
+        for (dimension_t i = 0; i < Dim; ++i)
+        {
+            identity[i][i] = cplx_t::fromReal(1.0);
+        }
+        return identity;
+    }
+
+    // Single-qubit identity
+    constexpr matrix_t<2, 2> I = identity_matrix<1U>();
+
+    // Hadamard gate: H = (1/sqrt(2)) * [[1, 1], [1, -1]]
+    constexpr matrix_t<2, 2> H = {{
+        { cplx_t(1.0 / sqrt2, 0.0), cplx_t(1.0 / sqrt2, 0.0) },
+        { cplx_t(1.0 / sqrt2, 0.0), cplx_t(-1.0 / sqrt2, 0.0) }
+    }};
+
+    // Pauli-X (NOT)
+    constexpr matrix_t<2, 2> X = {{
+        { cplx_t(0.0, 0.0), cplx_t(1.0, 0.0) },
+        { cplx_t(1.0, 0.0), cplx_t(0.0, 0.0) }
+    }};
+
+    // Pauli-Y
+    constexpr matrix_t<2, 2> Y = {{
+        { cplx_t(0.0, 0.0), cplx_t(0.0, -1.0) },
+        { cplx_t(0.0, 1.0), cplx_t(0.0, 0.0) }
+    }};
+
+    // Pauli-Z
+    constexpr matrix_t<2, 2> Z = {{
+        { cplx_t(1.0, 0.0), cplx_t(0.0, 0.0) },
+        { cplx_t(0.0, 0.0), cplx_t(-1.0, 0.0) }
+    }};
+
+    // 2-qubit SWAP gate
+    constexpr matrix_t<4, 4> SWAP = {{
+        { cplx_t(1.0, 0.0), cplx_t(0.0, 0.0), cplx_t(0.0, 0.0), cplx_t(0.0, 0.0) },
+        { cplx_t(0.0, 0.0), cplx_t(0.0, 0.0), cplx_t(1.0, 0.0), cplx_t(0.0, 0.0) },
+        { cplx_t(0.0, 0.0), cplx_t(1.0, 0.0), cplx_t(0.0, 0.0), cplx_t(0.0, 0.0) },
+        { cplx_t(0.0, 0.0), cplx_t(0.0, 0.0), cplx_t(0.0, 0.0), cplx_t(1.0, 0.0) }
+    }};
+
+    // T and S phase gates
+    constexpr matrix_t<2, 2> T = {{
+        { cplx_t(1.0, 0.0), cplx_t(0.0, 0.0) },
+        { cplx_t(0.0, 0.0), cplx_t(1.0 / sqrt2, 1.0 / sqrt2) }
+    }};
+    
+    constexpr matrix_t<2, 2> S = {{
+        { cplx_t(1.0, 0.0), cplx_t(0.0, 0.0) },
+        { cplx_t(0.0, 0.0), cplx_t(0.0, 1.0) }
+    }};
+
+
+} // namespace Gates    
