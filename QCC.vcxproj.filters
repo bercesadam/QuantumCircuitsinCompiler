@@ -18,9 +18,6 @@
     <ClInclude Include="circuit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cnot_gates.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="constexpr_complex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -33,7 +30,7 @@
     <ClInclude Include="gates.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="qft_gate.h">
+    <ClInclude Include="iqft_gate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="quantum_gate.h">

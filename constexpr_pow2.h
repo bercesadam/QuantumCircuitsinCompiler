@@ -1,5 +1,7 @@
 #pragma once
 #include <concepts>
+#include <limits>
+#include <cmath>
 
 /// @file
 /// @brief Small constexpr integer utilities used for dimensions and bit manipulations.
@@ -53,6 +55,30 @@ namespace ConstexprMath
     {
         // Fast test: powers of two have exactly one bit set.
         return x > 0 && (x & (x - 1)) == 0;
+    }
+
+    /**
+     * @brief Compute the square root of a floating-point number at compile time.
+     *
+     * @param x  The input value (must be non-negative).
+     * @return   The square root of x, or NaN if x is negative.
+     *
+     * @note This implementation uses the Newton-Raphson method for computing
+     *       the square root and is constexpr-friendly.
+	 */
+    template <std::floating_point FloatType>
+    constexpr FloatType sqrt(FloatType x) {
+        // Handle edge cases
+        if (x < 0.0) return std::numeric_limits<FloatType>::quiet_NaN();
+        if (x == 0.0 || x == std::numeric_limits<FloatType>::infinity()) return x;
+
+        // Recursive lambda for Newton-Raphson
+        auto sqrtRec = [](FloatType x, FloatType curr, FloatType prev, auto&& self) -> FloatType {
+            return curr == prev ? curr
+                : self(x, 0.5 * (curr + x / curr), curr, self);
+        };
+
+        return sqrtRec(x, x, 0.0, sqrtRec);
     }
 
 }

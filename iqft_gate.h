@@ -2,6 +2,7 @@
 #include "gates.h"
 #include "constexpr_trigon.h"
 
+
 namespace Gates
 {
     /**
@@ -19,7 +20,7 @@ namespace Gates
         make_IQFT_matrix() noexcept
     {
         constexpr dimension_t N = ConstexprMath::pow2(QBitCount);
-        constexpr double inv_sqrt_N = 1.0 / std::sqrt(static_cast<double>(N));
+        constexpr double inv_sqrt_N = 1.0 / ConstexprMath::sqrt(static_cast<double>(N));
 
         matrix_t<N, N> M{};
 
@@ -29,13 +30,13 @@ namespace Gates
             {
                 // angle = 2π * j * k / N
                 const double angle =
-                    2.0 * Pi * static_cast<double>(j * k)
+                    2.0 * ConstexprMath::Pi * static_cast<double>(j * k)
                     / static_cast<double>(N);
 
                 // For inverse QFT use the negative exponent:
                 // exp(-i * angle) = cos(angle) - i * sin(angle)
-                const double re = cos_constexpr(angle);
-                const double im = -sin_constexpr(angle);
+                const double re = ConstexprMath::cos_constexpr(angle);
+                const double im = -ConstexprMath::sin_constexpr(angle);
 
                 M[j][k] = cplx_t(
                     inv_sqrt_N * re,

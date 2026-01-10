@@ -128,12 +128,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="circuit.h" />
-    <ClInclude Include="cnot_gates.h" />
     <ClInclude Include="constexpr_complex.h" />
     <ClInclude Include="constexpr_pow2.h" />
     <ClInclude Include="constexpr_trigon.h" />
     <ClInclude Include="gates.h" />
-    <ClInclude Include="qft_gate.h" />
+    <ClInclude Include="iqft_gate.h" />
     <ClInclude Include="quantum_gate.h" />
     <ClInclude Include="quantum_gate_helpers.h" />
     <ClInclude Include="types.h" />

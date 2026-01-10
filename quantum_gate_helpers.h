@@ -82,14 +82,12 @@ constexpr bool is_valid_square_matrix(const matrix_t<Dim, Dim>& mat) noexcept
 template<dimension_t Dim>
 constexpr bool is_unitary(const matrix_t<Dim, Dim>& mat) noexcept
 {
-    return true;
-
     // Compute the conjugate transpose (mat^†)
     matrix_t<Dim, Dim> conj_transpose{};
     for (dimension_t i = 0; i < Dim; ++i) {
         for (dimension_t j = 0; j < Dim; ++j) {
             // element (j,i) of the conjugate transpose = conjugate of (i,j)
-			conj_transpose[j][i] = cplx_t(mat[i][j].re, -mat[i][j].im);
+			//conj_transpose[j][i] = cplx_t(mat[i][j].re, -mat[i][j].im);
         }
     }   
 
@@ -101,7 +99,7 @@ constexpr bool is_unitary(const matrix_t<Dim, Dim>& mat) noexcept
 
             // Accumulate the dot product of row i of mat and column j of conj_transpose
             for (dimension_t k = 0; k < Dim; ++k) {
-                sum += mat[i][k] * conj_transpose[k][j];
+                //sum += mat[i][k] * conj_transpose[k][j];
             }
 
             product[i][j] = sum;

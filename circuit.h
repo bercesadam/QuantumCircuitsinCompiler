@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "quantum_gate.h"
 
 #include <iostream>
@@ -77,42 +77,65 @@ public:
     /// @brief Base case for recursion: no gates left to apply.
     constexpr void executeCircuit() {}
 
-    // ------------------------------------------------------------
-    // Prints measurement probabilities of all computational states
-    //
-    // Example output:
-    // |00> : 50.00 %
-    // |11> : 50.00 %
-    // ------------------------------------------------------------
-    /// @brief Print the probability (in percent) of each computational basis state.
-    /// @param os  Output stream (defaults to std::cout).
+	/// @brief Print the probabilities of measuring selected qubits in each basis state.
+	/// @tparam SelectedQBits  Indices of the qubits to consider (0-based).
+	/// @param os              Output stream to write to (defaults to std::cout).
+    ///    
+    template<dimension_t... SelectedQBits>
     void printProbabilities(std::ostream& os = std::cout) const
     {
         constexpr dimension_t StateCount = ConstexprMath::pow2(QBitCount);
+        constexpr dimension_t numQBits = sizeof...(SelectedQBits);
+        constexpr qbit_list_t<numQBits> selectedQubits =
+            qbit_list_t<numQBits>{ static_cast<dimension_t>(SelectedQBits)... };
 
-        // Format numbers with two decimal places
+        // Format numbers
         os << std::fixed << std::setprecision(2);
 
+        // Number of qubits we are considering
+        constexpr dimension_t numSelected = numQBits;
+        constexpr dimension_t reducedDim = ConstexprMath::pow2(numSelected);
+
+        // Array to accumulate probabilities for each reduced basis state
+        std::array<double, reducedDim> reducedProbabilities = {};
+
+        // Sum probabilities over all other qubits
         for (dimension_t i = 0; i < StateCount; ++i)
         {
-            const cplx_t& amp = StateVector[i];
+            double p = static_cast<double>(
+                StateVector[i].re * StateVector[i].re +
+                StateVector[i].im * StateVector[i].im
+                );
 
-            // Probability = |amplitude|^2 = re^2 + im^2
-            const double probability =              
-                static_cast<double>(amp.re * amp.re +
-                    amp.im * amp.im);
-
-            // Print basis state in binary ket notation: |0101>
-            os << "|";
-
-            for (dimension_t bit = 0; bit < QBitCount; ++bit)
+            dimension_t reducedIdx = 0;
+            for (dimension_t b = 0; b < numSelected; ++b)
             {
-                // Mask selects bit from most-significant to least for human-readable order
-                const dimension_t mask = dimension_t(1) << (QBitCount - 1 - bit);
-                os << ((i & mask) ? '1' : '0');
+                const dimension_t q = selectedQubits[b];
+                if (i & (1ULL << q))
+                    reducedIdx |= (1ULL << b);
             }
 
-            os << "> : " << (probability * 100.0) << " %\n";
+            reducedProbabilities[reducedIdx] += p;
+        }
+
+        // Print header
+        os << "| Binary | Decimal | Probability (%) |\n";
+        os << "|--------|---------|----------------|\n";
+
+        // Print reduced probabilities
+        for (dimension_t i = 0; i < reducedDim; ++i)
+        {
+            // Binary string
+            os << "|";
+            for (dimension_t b = numSelected; b-- > 0;)
+                os << ((i & (1ULL << b)) ? '1' : '0');
+            os << "|";
+
+            // Decimal
+            os << " " << i << " |";
+
+            // Probability
+            os << " " << (reducedProbabilities[i] * 100.0) << " % |\n";
         }
     }
 };

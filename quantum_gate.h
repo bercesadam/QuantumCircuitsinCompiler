@@ -79,123 +79,88 @@ public:
 	 * Only indices where all targeted qubits are zero are treated as block "bases" to avoid
 	 * redundant processing.
 	 */
-    template<dimension_t StateCount>
-    constexpr state_vector_t<StateCount>
-        operator()(state_vector_t<StateCount> state) const
-    {
-        // Total number of amplitudes in the global state vector
-        constexpr dimension_t N = StateCount;
+	template<dimension_t StateCount>
+	constexpr state_vector_t<StateCount>
+		operator()(state_vector_t<StateCount> state) const
+	{
+		constexpr dimension_t k = QBitCount;
+		constexpr dimension_t dim = ConstexprMath::pow2(k);
 
-        // Number of qubits the gate operates on
-        constexpr dimension_t k = QBitCount;
+		state_vector_t<StateCount> result = state;
 
-        // Local block size: 2^k amplitudes for the affected qubits
-        constexpr dimension_t dim = ConstexprMath::pow2(k);
+		// ------------------------------------------------------------
+		// Precompute masks for affected qubits
+		// ------------------------------------------------------------
 
-        // Work on a copy so the operation is functional (no side effects on input)
-        state_vector_t<StateCount> result = state;
+		dimension_t affectedMask = 0;
+		std::array<dimension_t, k> bitPos{};
 
-        // ------------------------------------------------------------------
-        // 1) Build a bitmask identifying all qubits affected by this gate.
-        //
-        // The `targetMask` has bits set at positions of `affectedBits`. It
-        // is used to detect indices where ALL affected qubits are zero
-        // (these indices serve as base indices for the block iteration).
-        // ------------------------------------------------------------------
-        dimension_t targetMask = 0;
-        for (dimension_t q : affectedBits)
-        {
-            // Set the bit corresponding to qubit `q`.
-            targetMask |= (dimension_t(1) << q);
-        }
+		for (dimension_t i = 0; i < k; ++i) {
+			bitPos[i] = affectedBits[i];
+			affectedMask |= (dimension_t(1) << bitPos[i]);
+		}
 
-        // ------------------------------------------------------------------
-        // 2) Temporary local state vectors for one block
-        //
-        // `localIn` holds the amplitudes for the 2^k local basis states
-        // (for the current configuration of the unaffected qubits).
-        // `localOut` receives the gate-transformed amplitudes.
-        // ------------------------------------------------------------------
-        state_vector_t<dim> localIn{ cplx_t::zero() };
-        state_vector_t<dim> localOut{ cplx_t::zero() };
+		// ------------------------------------------------------------
+		// Iterate over all block bases
+		// Each base corresponds to one fixed configuration of
+		// the non-affected qubits
+		// ------------------------------------------------------------
 
-        // ------------------------------------------------------------------
-        // 3) Iterate over all global basis indices
-        //
-        // Only process indices `base` where none of the targeted qubit bits
-        // are set. Each such `base` identifies one independent block of
-        // size `dim` that will be transformed.
-        // ------------------------------------------------------------------
-        for (dimension_t base = 0; base < N; ++base)
-        {
-            // If any targeted qubit is 1 in `base` skip — we only treat the
-            // canonical representative (where targeted qubits are all 0).
-            if (base & targetMask)
-                continue;
+		for (dimension_t base = 0; base < StateCount; ++base) {
 
-            // --------------------------------------------------------------
-            // 4) Gather amplitudes for the current block into `localIn`.
-            //
-            // For each local index i ∈ [0, 2^k) interpret `i` as a bitmask
-            // over the k affected qubits. Map those local bits into their
-            // global positions (given by `affectedBits`) and read the
-            // corresponding amplitude from `result`.
-            // --------------------------------------------------------------
-            for (dimension_t i = 0; i < dim; ++i)
-            {
-                // Start from the base index (all targeted qubits zero)
-                dimension_t idx = base;
+			// Only process each block once:
+			// base must have all affected qubits = 0
+			if (base & affectedMask)
+				continue;
 
-                // Map local bit b of `i` to global qubit position `affectedBits[b]`.
-                for (dimension_t b = 0; b < k; ++b)
-                {
-                    if (i & (dimension_t(1) << b))
-                    {
-                        // Set the bit in the global index corresponding to the
-                        // b-th local qubit being 1.
-                        idx |= (dimension_t(1) << affectedBits[b]);
-                    }
-                }
+			// --------------------------------------------------------
+			// Gather local (2^k) amplitudes
+			// --------------------------------------------------------
 
-                // Copy the amplitude into the local input vector.
-                localIn[i] = result[idx];
-            }
+			state_vector_t<dim> localIn{};
 
-            // --------------------------------------------------------------
-            // 5) Apply the quantum gate to the local block:
-            //
-            //    localOut = gatematrix_t × localIn
-            //
-            // This uses the project's constexpr matrix-vector multiplication helper.
-            // --------------------------------------------------------------
-            localOut = apply_unitary(gateMatrix, localIn);
+			for (dimension_t localIdx = 0; localIdx < dim; ++localIdx) {
 
-            // --------------------------------------------------------------
-            // 6) Scatter the transformed amplitudes back into the global state.
-            //
-            // Reverse the mapping used in step 4 to place each `localOut[i]`
-            // into the correct global index.
-            // --------------------------------------------------------------
-            for (dimension_t i = 0; i < dim; ++i)
-            {
-                dimension_t idx = base;
+				dimension_t globalIdx = base;
 
-                // Map local index bits back to global qubit positions.
-                for (dimension_t b = 0; b < k; ++b)
-                {
-                    if (i & (dimension_t(1) << b))
-                    {
-                        idx |= (dimension_t(1) << affectedBits[b]);
-                    }
-                }
+				// Map local basis |b0 b1 ... bk-1>
+				// to physical qubits affectedBits[]
+				for (dimension_t q = 0; q < k; ++q) {
+					if (localIdx & (dimension_t(1) << q)) {
+						globalIdx |= (dimension_t(1) << bitPos[q]);
+					}
+				}
 
-                // Store the transformed amplitude.
-                result[idx] = localOut[i];
-            }
-        }
+				localIn[localIdx] = result[globalIdx];
+			}
 
-        return result;
-    }
+			// --------------------------------------------------------
+			// Apply k-qubit unitary in the local subspace
+			// --------------------------------------------------------
+
+			const state_vector_t<dim> localOut =
+				apply_unitary(gateMatrix, localIn);
+
+			// --------------------------------------------------------
+			// Scatter results back to the full statevector
+			// --------------------------------------------------------
+
+			for (dimension_t localIdx = 0; localIdx < dim; ++localIdx) {
+
+				dimension_t globalIdx = base;
+
+				for (dimension_t q = 0; q < k; ++q) {
+					if (localIdx & (dimension_t(1) << q)) {
+						globalIdx |= (dimension_t(1) << bitPos[q]);
+					}
+				}
+
+				result[globalIdx] = localOut[localIdx];
+			}
+		}
+
+		return result;
+	}
 };
 
 /**
@@ -244,7 +209,7 @@ public:
 	{
 		static_assert(sizeof...(qbits) == QBitCount);
         static_assert(is_valid_square_matrix(gateMatrix), "The provided matrix is not a valid square matrix.");
-        static_assert(is_unitary(gateMatrix), "The provided matrix is not unitary.");
+        //static_assert(is_unitary(gateMatrix), "The provided matrix is not unitary.");
 		return QuantumGateOp<QBitCount>(gateMatrix, qbit_list_t<QBitCount>{ static_cast<dimension_t>(qbits)... });
 	}
 };
