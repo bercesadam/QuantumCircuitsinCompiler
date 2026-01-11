@@ -18,6 +18,20 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\TestCircuits.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\constexprmath\constexpr_complex.h" />
+    <ClInclude Include="include\constexprmath\constexpr_pow2.h" />
+    <ClInclude Include="include\constexprmath\constexpr_trigon.h" />
+    <ClInclude Include="include\engine\circuit.h" />
+    <ClInclude Include="include\engine\quantum_gate.h" />
+    <ClInclude Include="include\engine\quantum_gate_helpers.h" />
+    <ClInclude Include="include\engine\types.h" />
+    <ClInclude Include="include\gates\common_gates.h" />
+    <ClInclude Include="include\gates\iqft_gate.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -104,7 +118,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp23</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>./include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,27 +134,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp23</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>./include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="circuit.h" />
-    <ClInclude Include="constexpr_complex.h" />
-    <ClInclude Include="constexpr_pow2.h" />
-    <ClInclude Include="constexpr_trigon.h" />
-    <ClInclude Include="gates.h" />
-    <ClInclude Include="iqft_gate.h" />
-    <ClInclude Include="quantum_gate.h" />
-    <ClInclude Include="quantum_gate_helpers.h" />
-    <ClInclude Include="types.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="QuantumCircuitsInCompiler.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -107,5 +107,13 @@ namespace ConstexprMath
             im += other.im;
             return *this;
         }
+
+		/// @brief Compute the complex conjugate.
+		/// @return The conjugate of this complex number.
+        constexpr Complex conj() const noexcept
+        {
+            // Conjugate: invert the sign of the imaginary part.
+            return { re, -im };
+		}
     };
 }

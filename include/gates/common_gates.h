@@ -1,5 +1,5 @@
 #pragma once
-    #include "types.h"
+    #include "engine/types.h"
 
 /// @file
 /// @brief Common single- and two-qubit gate matrices and helpers.
@@ -18,7 +18,7 @@ namespace Gates
     constexpr double inv_sqrt2 = 1.0 / sqrt2;
 
     /**
-     * @brief Produce an identity matrix for `QBitCount` qubits (2^QBitCount × 2^QBitCount).
+     * @brief Produce an identity matrix for `QBitCount` qubits (2^QBitCount ï¿½ 2^QBitCount).
      * @tparam QBitCount  Number of qubits.
      * @return A diagonal identity matrix with ones on the main diagonal.
      */

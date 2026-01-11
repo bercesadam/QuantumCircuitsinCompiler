@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "gates.h"
-#include "constexpr_trigon.h"
+#include "common_gates.h"
+#include "constexprmath/constexpr_trigon.h"
 
 
 namespace Gates

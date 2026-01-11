@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
-#include "constexpr_complex.h"
-#include "constexpr_pow2.h"
+#include "constexprmath/constexpr_complex.h"
+#include "constexprmath/constexpr_pow2.h"
 
 /// @file
 /// @brief Core type aliases used across the project: sizes, complex number type, vectors and matrices.

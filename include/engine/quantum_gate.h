@@ -2,7 +2,8 @@
 #include "types.h"
 #include "quantum_gate_helpers.h"
 
-template<index_t QBitCount>
+template<dimension_t QBitCount, auto GateMatrix>
+	requires (is_gate_matrix_v<std::remove_cvref_t<decltype(GateMatrix)>> && is_unitary<GateMatrix>())
 class QuantumGate;
 
 /**
@@ -59,7 +60,9 @@ class QuantumGateOp
 	}
 
 	// Allow the factory QuantumGate to access the private ctor
-	friend class QuantumGate<QBitCount>;
+	template<dimension_t QBitCount, auto GateMatrix>
+		requires (is_gate_matrix_v<std::remove_cvref_t<decltype(GateMatrix)>>&& is_unitary<GateMatrix>())
+	friend class QuantumGate;
 
 public:
 	/**
@@ -171,7 +174,8 @@ public:
  * `QuantumGate` owns the gate matrix and exposes `toBits(...)` to bind the
  * matrix to a concrete set of qubit indices producing a `QuantumGateOp`.
  */
-template<dimension_t QBitCount>
+template<dimension_t QBitCount, auto GateMatrix>
+	requires (is_gate_matrix_v<std::remove_cvref_t<decltype(GateMatrix)>> && is_unitary<GateMatrix>())
 class QuantumGate
 {
 	/**
@@ -180,18 +184,18 @@ class QuantumGate
 	 * The matrix is owned by the factory and used to construct `QuantumGateOp`
 	 * instances. Kept immutable after construction.
 	 */
-	const matrix_t<ConstexprMath::pow2(QBitCount), ConstexprMath::pow2(QBitCount)> gateMatrix;
+	//const matrix_t<ConstexprMath::pow2(QBitCount), ConstexprMath::pow2(QBitCount)> gateMatrix;
 
 public:
 
 	/**
 	 * @brief     Construct a gate from its unitary matrix.
 	 * @param U   The gate matrix (must be 2^QBitCount × 2^QBitCount and unitary).
-	 */
+	 *//*
 	constexpr explicit QuantumGate(
 		const matrix_t<ConstexprMath::pow2(QBitCount), ConstexprMath::pow2(QBitCount)>& U)
 		: gateMatrix(U) {
-	}
+	}*/
 
 	/**
 	 * @brief     Bind this gate to a list of qubit indices and return an operation.
@@ -208,8 +212,8 @@ public:
 	constexpr QuantumGateOp<QBitCount> toBits(QBits... qbits) const
 	{
 		static_assert(sizeof...(qbits) == QBitCount);
-        static_assert(is_valid_square_matrix(gateMatrix), "The provided matrix is not a valid square matrix.");
-        //static_assert(is_unitary(gateMatrix), "The provided matrix is not unitary.");
-		return QuantumGateOp<QBitCount>(gateMatrix, qbit_list_t<QBitCount>{ static_cast<dimension_t>(qbits)... });
+        //static_assert(is_valid_square_matrix(GateMatrix), "The provided matrix is not a valid square matrix.");
+       // static_assert(is_unitary(GateMatrix), "The provided matrix is not unitary.");
+		return QuantumGateOp<QBitCount>(GateMatrix, qbit_list_t<QBitCount>{ static_cast<dimension_t>(qbits)... });
 	}
 };
