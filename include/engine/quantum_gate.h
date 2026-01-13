@@ -4,7 +4,7 @@
 
 template<dimension_t QBitCount, auto GateMatrix>
 	requires (is_gate_matrix_v<std::remove_cvref_t<decltype(GateMatrix)>> && is_unitary<GateMatrix>())
-class QuantumGate;
+struct QuantumGate;
 
 /**
  * @brief     Represents an application of a quantum gate to a specific set of qubits.
@@ -60,9 +60,9 @@ class QuantumGateOp
 	}
 
 	// Allow the factory QuantumGate to access the private ctor
-	template<dimension_t QBitCount, auto GateMatrix>
-		requires (is_gate_matrix_v<std::remove_cvref_t<decltype(GateMatrix)>>&& is_unitary<GateMatrix>())
-	friend class QuantumGate;
+	template<dimension_t _QBitCount, auto _GateMatrix>
+		requires (is_gate_matrix_v<std::remove_cvref_t<decltype(_GateMatrix)>>&& is_unitary<_GateMatrix>())
+	friend struct QuantumGate;
 
 public:
 	/**
@@ -176,18 +176,8 @@ public:
  */
 template<dimension_t QBitCount, auto GateMatrix>
 	requires (is_gate_matrix_v<std::remove_cvref_t<decltype(GateMatrix)>> && is_unitary<GateMatrix>())
-class QuantumGate
+struct QuantumGate
 {
-	/**
-	 * @brief  The unitary matrix for this gate.
-	 *
-	 * The matrix is owned by the factory and used to construct `QuantumGateOp`
-	 * instances. Kept immutable after construction.
-	 */
-	//const matrix_t<ConstexprMath::pow2(QBitCount), ConstexprMath::pow2(QBitCount)> gateMatrix;
-
-public:
-
 	/**
 	 * @brief     Construct a gate from its unitary matrix.
 	 * @param U   The gate matrix (must be 2^QBitCount × 2^QBitCount and unitary).
@@ -217,3 +207,21 @@ public:
 		return QuantumGateOp<QBitCount>(GateMatrix, qbit_list_t<QBitCount>{ static_cast<dimension_t>(qbits)... });
 	}
 };
+
+
+/// @brief     Factory for creating `QuantumGateOp` objects from a 1-qubit gate matrix.
+/// @tparam QBitCount  Number of qubits the gate matrix acts on.
+template<dimension_t QBitCount, auto GateMatrix>
+	requires (is_1_qbit_gate_matrix_v<std::remove_cvref_t<decltype(GateMatrix)>>&& is_unitary<GateMatrix>())
+struct ParallelSingleQubitGate
+{
+	//TODO
+	template<std::convertible_to<dimension_t>... QBits>
+	constexpr auto toBits(QBits... qbits) const
+	{
+		static_assert(sizeof...(qbits) == QBitCount);
+
+		return;
+	}
+};
+

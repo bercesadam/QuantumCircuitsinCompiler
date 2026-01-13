@@ -1,7 +1,0 @@
-<Solution>
-  <Configurations>
-    <Platform Name="x64" />
-    <Platform Name="x86" />
-  </Configurations>
-  <Project Path="QCC.vcxproj" Id="17277d46-a34c-4799-80e6-5dd6441b621b" />
-</Solution>

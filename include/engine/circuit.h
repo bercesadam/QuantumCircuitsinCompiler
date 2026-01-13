@@ -90,7 +90,7 @@ public:
             qbit_list_t<numQBits>{ static_cast<dimension_t>(SelectedQBits)... };
 
         // Format numbers
-        os << std::fixed << std::setprecision(10);
+        os << std::fixed << std::setprecision(2);
 
         // Number of qubits we are considering
         constexpr dimension_t numSelected = numQBits;
