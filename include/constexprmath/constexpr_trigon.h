@@ -28,21 +28,24 @@ namespace ConstexprMath
     static constexpr double Pi = 3.141592653589793238462643383279502884;
 
     /// @brief Factorial function constexpr (optional, used to define coefficients)
-    constexpr double factorial(int n) noexcept {
+    constexpr double factorial(int n) noexcept
+    {
         double r = 1.0;
         for (int i = 2; i <= n; ++i) r *= i;
         return r;
     }
 
     /// @brief Floor function usable in constexpr
-    constexpr int floorConstexpr(double x) noexcept {
+    constexpr int floorConstexpr(double x) noexcept
+    {
         int32_t i = static_cast<int32_t>(x);
         return (x < static_cast<double>(i)) ? (i - 1) : i;
     }
 
     /// @brief Polynomial approximation to sin(x) around 0
     /// Accurate for |x| <= π/4
-    constexpr double sinPoly(double x) noexcept {
+    constexpr double sinPoly(double x) noexcept
+    {
         const double x2 = x * x;
         double result = x;
         double term = x;
@@ -56,7 +59,8 @@ namespace ConstexprMath
 
     /// @brief Polynomial approximation to cos(x) around 0
     /// Accurate for |x| <= π/4
-    constexpr double cosPoly(double x) noexcept {
+    constexpr double cosPoly(double x) noexcept
+    {
         const double x2 = x * x;
         double result = 1.0;
         double term = -x2 / 2.0; result += term;      // -x^2/2!
@@ -72,7 +76,8 @@ namespace ConstexprMath
     /// @param x Input angle in radians
     /// @param xr Output reduced angle (by reference)
     /// @return Quadrant index 0..3
-    constexpr int reduceQuadrant(double x, double& xr) noexcept {
+    constexpr int reduceQuadrant(double x, double& xr) noexcept
+    {
         // Map x to k*(π/2) + xr, xr in [-π/4, π/4]
         double k = floorConstexpr((x + Pi / 4.0) / (Pi / 2.0));
         xr = x - k * (Pi / 2.0);
@@ -81,10 +86,12 @@ namespace ConstexprMath
     }
 
     /// @brief Constexpr sine with quadrant-aware range reduction
-    constexpr double sin(double x) noexcept {
+    constexpr double sin(double x) noexcept
+    {
         double xr;
         int q = reduceQuadrant(x, xr);
-        switch (q) {
+        switch (q)
+        {
         case 0: return sinPoly(xr);
         case 1: return cosPoly(xr);
         case 2: return -sinPoly(xr);
@@ -94,10 +101,12 @@ namespace ConstexprMath
     }
 
     /// @brief Constexpr cosine with quadrant-aware range reduction
-    constexpr double cos(double x) noexcept {
+    constexpr double cos(double x) noexcept
+    {
         double xr;
         int q = reduceQuadrant(x, xr);
-        switch (q) {
+        switch (q)
+        {
         case 0: return cosPoly(xr);
         case 1: return -sinPoly(xr);
         case 2: return -cosPoly(xr);

@@ -126,14 +126,16 @@ public:
 
 			state_vector_t<Dim> LocalIndices{};
 
-			for (dimension_t i = 0; i < Dim; ++i) {
-
+			for (dimension_t i = 0; i < Dim; ++i)
+			{
 				dimension_t GlobalIndex = base;
 
 				// Map local basis |b0 b1 ... bk-1>
 				// to physical qubits affectedBits[]
-				for (dimension_t q = 0; q < QBitCount; ++q) {
-					if (i & (dimension_t(1) << q)) {
+				for (dimension_t q = 0; q < QBitCount; ++q)
+				{
+					if (i & (dimension_t(1) << q))
+					{
 						GlobalIndex |= (dimension_t(1) << BitPos[q]);
 					}
 				}
@@ -152,12 +154,14 @@ public:
 			// Scatter results back to the full statevector
 			// --------------------------------------------------------
 
-			for (dimension_t i = 0; i < Dim; ++i) {
-
+			for (dimension_t i = 0; i < Dim; ++i)
+			{
 				dimension_t GlobalIndex = base;
 
-				for (dimension_t q = 0; q < QBitCount; ++q) {
-					if (i & (dimension_t(1) << q)) {
+				for (dimension_t q = 0; q < QBitCount; ++q)
+				{
+					if (i & (dimension_t(1) << q))
+					{
 						GlobalIndex |= (dimension_t(1) << BitPos[q]);
 					}
 				}

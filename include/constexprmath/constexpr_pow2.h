@@ -73,7 +73,8 @@ namespace ConstexprMath
         if (x == 0.0 || x == std::numeric_limits<FloatType>::infinity()) return x;
 
         // Recursive lambda for Newton-Raphson
-        auto sqrtRec = [](FloatType x, FloatType curr, FloatType prev, auto&& self) -> FloatType {
+        auto sqrtRec = [](FloatType x, FloatType curr, FloatType prev, auto&& self) -> FloatType
+        {
             return curr == prev ? curr
                 : self(x, 0.5 * (curr + x / curr), curr, self);
         };
