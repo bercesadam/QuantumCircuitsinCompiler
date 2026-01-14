@@ -2,6 +2,9 @@
 #include "types.h"
 #include "quantum_gate_helpers.h"
 
+/// @file Quantum gate representation and application to state vectors.
+
+// Forward declaration of QuantumGate factory to befriend QuantumGateOp
 template<dimension_t QBitCount, auto GateMatrix>
 	requires (is_gate_matrix_v<std::remove_cvref_t<decltype(GateMatrix)>> && is_unitary<GateMatrix>())
 struct QuantumGate;
@@ -25,7 +28,7 @@ class QuantumGateOp
 	 *
 	 * Size: 2^QBitCount × 2^QBitCount. Stored as a compile-time sized matrix type.
 	 */
-	const matrix_t<ConstexprMath::pow2(QBitCount), ConstexprMath::pow2(QBitCount)> gateMatrix;
+	const matrix_t<ConstexprMath::pow2(QBitCount), ConstexprMath::pow2(QBitCount)> GateMatrix;
 
 	/**
 	 * @brief  Fixed-size list of qubit indices affected by this gate.
@@ -33,7 +36,7 @@ class QuantumGateOp
 	 * The order of indices in this list determines the mapping between the
 	 * local basis bits ([0 .. 2^QBitCount)) and the global qubit positions.
 	 */
-	const qbit_list_t<QBitCount> affectedBits;
+	const qbit_list_t<QBitCount> AffectedBits;
 
 	// Delete copy constructor and copy assignment
 	QuantumGateOp(const QuantumGateOp&) = delete;
@@ -54,12 +57,14 @@ class QuantumGateOp
 	constexpr QuantumGateOp(
 		const matrix_t<ConstexprMath::pow2(QBitCount), ConstexprMath::pow2(QBitCount)>& U,
 		const qbit_list_t<QBitCount>& affectedBits)
-		: gateMatrix(U), affectedBits(affectedBits)
+		: GateMatrix(U), AffectedBits(affectedBits)
 	{
 
 	}
 
 	// Allow the factory QuantumGate to access the private ctor
+	// Underscore prefixes were added to avoid name clashes, as GCC complains otherwise,
+	// MSVC seems to be fine without it.
 	template<dimension_t _QBitCount, auto _GateMatrix>
 		requires (is_gate_matrix_v<std::remove_cvref_t<decltype(_GateMatrix)>>&& is_unitary<_GateMatrix>())
 	friend struct QuantumGate;
@@ -86,21 +91,20 @@ public:
 	constexpr state_vector_t<StateCount>
 		operator()(state_vector_t<StateCount> state) const
 	{
-		constexpr dimension_t k = QBitCount;
-		constexpr dimension_t dim = ConstexprMath::pow2(k);
+		constexpr dimension_t Dim = ConstexprMath::pow2(QBitCount);
 
-		state_vector_t<StateCount> result = state;
+		state_vector_t<StateCount> Result = state;
 
 		// ------------------------------------------------------------
 		// Precompute masks for affected qubits
 		// ------------------------------------------------------------
 
-		dimension_t affectedMask = 0;
-		std::array<dimension_t, k> bitPos{};
+		dimension_t AffectedMask = 0;
+		std::array<dimension_t, QBitCount> BitPos{};
 
-		for (dimension_t i = 0; i < k; ++i) {
-			bitPos[i] = affectedBits[i];
-			affectedMask |= (dimension_t(1) << bitPos[i]);
+		for (dimension_t i = 0; i < QBitCount; ++i) {
+			BitPos[i] = AffectedBits[i];
+			AffectedMask |= (dimension_t(1) << BitPos[i]);
 		}
 
 		// ------------------------------------------------------------
@@ -113,56 +117,56 @@ public:
 
 			// Only process each block once:
 			// base must have all affected qubits = 0
-			if (base & affectedMask)
+			if (base & AffectedMask)
 				continue;
 
 			// --------------------------------------------------------
 			// Gather local (2^k) amplitudes
 			// --------------------------------------------------------
 
-			state_vector_t<dim> localIn{};
+			state_vector_t<Dim> LocalIndices{};
 
-			for (dimension_t localIdx = 0; localIdx < dim; ++localIdx) {
+			for (dimension_t i = 0; i < Dim; ++i) {
 
-				dimension_t globalIdx = base;
+				dimension_t GlobalIndex = base;
 
 				// Map local basis |b0 b1 ... bk-1>
 				// to physical qubits affectedBits[]
-				for (dimension_t q = 0; q < k; ++q) {
-					if (localIdx & (dimension_t(1) << q)) {
-						globalIdx |= (dimension_t(1) << bitPos[q]);
+				for (dimension_t q = 0; q < QBitCount; ++q) {
+					if (i & (dimension_t(1) << q)) {
+						GlobalIndex |= (dimension_t(1) << BitPos[q]);
 					}
 				}
 
-				localIn[localIdx] = result[globalIdx];
+				LocalIndices[i] = Result[GlobalIndex];
 			}
 
 			// --------------------------------------------------------
 			// Apply k-qubit unitary in the local subspace
 			// --------------------------------------------------------
 
-			const state_vector_t<dim> localOut =
-				apply_unitary(gateMatrix, localIn);
+			const state_vector_t<Dim> LocalOut =
+				applyUnitary(GateMatrix, LocalIndices);
 
 			// --------------------------------------------------------
 			// Scatter results back to the full statevector
 			// --------------------------------------------------------
 
-			for (dimension_t localIdx = 0; localIdx < dim; ++localIdx) {
+			for (dimension_t i = 0; i < Dim; ++i) {
 
-				dimension_t globalIdx = base;
+				dimension_t GlobalIndex = base;
 
-				for (dimension_t q = 0; q < k; ++q) {
-					if (localIdx & (dimension_t(1) << q)) {
-						globalIdx |= (dimension_t(1) << bitPos[q]);
+				for (dimension_t q = 0; q < QBitCount; ++q) {
+					if (i & (dimension_t(1) << q)) {
+						GlobalIndex |= (dimension_t(1) << BitPos[q]);
 					}
 				}
 
-				result[globalIdx] = localOut[localIdx];
+				Result[GlobalIndex] = LocalOut[i];
 			}
 		}
 
-		return result;
+		return Result;
 	}
 };
 

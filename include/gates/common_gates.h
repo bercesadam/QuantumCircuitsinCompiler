@@ -1,20 +1,19 @@
 #pragma once
-    #include "engine/types.h"
+#include "engine/types.h"
 
 /// @file
 /// @brief Common single- and two-qubit gate matrices and helpers.
 ///
 /**
  * @details
- * Provides common quantum gates as `constexpr` matrices:
- *  - Identity, H, X, Y, Z, T, S, SWAP
+ * Provides common quantum gate matrices
  * and the `identity_matrix<QBitCount>()` helper for arbitrary qubit counts.
  */
 
 namespace Gates
 {
     /// @brief Mathematical constants used for gate definitions
-    constexpr double sqrt2 = 1.4142135623730950;
+	constexpr double sqrt2 = 1.41421356237309505;
     constexpr double inv_sqrt2 = 1.0 / sqrt2;
 
     /**
@@ -23,21 +22,21 @@ namespace Gates
      * @return A diagonal identity matrix with ones on the main diagonal.
      */
     template<dimension_t QBitCount>
-    constexpr matrix_t<ConstexprMath::pow2(QBitCount), ConstexprMath::pow2(QBitCount)> identity_matrix() noexcept
+    constexpr matrix_t<ConstexprMath::pow2(QBitCount), ConstexprMath::pow2(QBitCount)> identityMatrix() noexcept
     {
         constexpr dimension_t Dim = ConstexprMath::pow2(QBitCount);
 
         // Zero-initialize and set the diagonal entries to 1.0
-        matrix_t<Dim, Dim> identity = {};
+        matrix_t<Dim, Dim> Identity = {};
         for (dimension_t i = 0; i < Dim; ++i)
         {
-            identity[i][i] = cplx_t::fromReal(1.0);
+            Identity[i][i] = cplx_t::fromReal(1.0);
         }
-        return identity;
+        return Identity;
     }
 
     // Single-qubit identity
-    constexpr matrix_t<2, 2> I = identity_matrix<1U>();
+    constexpr matrix_t<2, 2> I = identityMatrix<1U>();
 
     // Hadamard gate: H = (1/sqrt(2)) * [[1, 1], [1, -1]]
     constexpr matrix_t<2, 2> H = {{

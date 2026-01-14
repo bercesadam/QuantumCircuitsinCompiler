@@ -19,14 +19,14 @@ template<index_t QBitCount>
 class QuantumCircuit;
 
 /// @brief Concept for types that behave like a gate: they are callable with a state vector.
-/// @tparam G  Type to test.
+/// @tparam GateType  Type to test.
 ///
 /// The requirement checks one instantiation (with StateCount == 1) and uses that as a
 /// proxy for gate-like behaviour. Implementers should ensure their operator() is
 /// templated or overloaded appropriately for various `StateCount` values.
-template<typename G>
+template<typename GateType>
 concept QuantumGateLike =
-    requires(G g)
+    requires(GateType g)
 {
     // Try invoking the gate with a sample 1-qubit state vector; the returned type
     // must be a state_vector_t<1>. This models the "callable that maps state->state".
@@ -79,63 +79,58 @@ public:
 
 	/// @brief Print the probabilities of measuring selected qubits in each basis state.
 	/// @tparam SelectedQBits  Indices of the qubits to consider (0-based).
-	/// @param os              Output stream to write to (defaults to std::cout).
     ///    
     template<dimension_t... SelectedQBits>
-    void printProbabilities(std::ostream& os = std::cout) const
+    void printProbabilities() const
     {
         constexpr dimension_t StateCount = ConstexprMath::pow2(QBitCount);
-        constexpr dimension_t numQBits = sizeof...(SelectedQBits);
-        constexpr qbit_list_t<numQBits> selectedQubits =
-            qbit_list_t<numQBits>{ static_cast<dimension_t>(SelectedQBits)... };
+        constexpr dimension_t NumSelected = sizeof...(SelectedQBits);
+        constexpr qbit_list_t<NumSelected> SelectedQubits =
+            qbit_list_t<NumSelected>{ static_cast<dimension_t>(SelectedQBits)... };
 
         // Format numbers
-        os << std::fixed << std::setprecision(2);
+        std::cout << std::fixed << std::setprecision(2);
 
         // Number of qubits we are considering
-        constexpr dimension_t numSelected = numQBits;
-        constexpr dimension_t reducedDim = ConstexprMath::pow2(numSelected);
+        constexpr dimension_t ReducedDim = ConstexprMath::pow2(NumSelected);
 
         // Array to accumulate probabilities for each reduced basis state
-        std::array<double, reducedDim> reducedProbabilities = {};
+        std::array<double, ReducedDim> ReducedProbabilities = {};
 
         // Sum probabilities over all other qubits
         for (dimension_t i = 0; i < StateCount; ++i)
         {
-            double p = static_cast<double>(
-                StateVector[i].re * StateVector[i].re +
-                StateVector[i].im * StateVector[i].im
-                );
+			double p = StateVector[i].normSquared();
 
-            dimension_t reducedIdx = 0;
-            for (dimension_t b = 0; b < numSelected; ++b)
+            dimension_t ReducedIdx = 0;
+            for (dimension_t b = 0; b < NumSelected; ++b)
             {
-                const dimension_t q = selectedQubits[b];
+                const dimension_t q = SelectedQubits[b];
                 if (i & (1ULL << q))
-                    reducedIdx |= (1ULL << b);
+                    ReducedIdx |= (1ULL << b);
             }
 
-            reducedProbabilities[reducedIdx] += p;
+            ReducedProbabilities[ReducedIdx] += p;
         }
 
         // Print header
-        os << "| Binary | Decimal | Probability (%) |\n";
-        os << "|--------|---------|----------------|\n";
+        std::cout << "| Binary | Decimal | Probability (%) |\n";
+        std::cout << "|--------|---------|----------------|\n";
 
         // Print reduced probabilities
-        for (dimension_t i = 0; i < reducedDim; ++i)
+        for (dimension_t i = 0; i < ReducedDim; ++i)
         {
             // Binary string
-            os << "|";
-            for (dimension_t b = numSelected; b-- > 0;)
-                os << ((i & (1ULL << b)) ? '1' : '0');
-            os << "|";
+            std::cout << "|";
+            for (dimension_t b = NumSelected; b-- > 0;)
+                std::cout << ((i & (1ULL << b)) ? '1' : '0');
+            std::cout << "|";
 
             // Decimal
-            os << " " << i << " |";
+            std::cout << " " << i << " |";
 
             // Probability
-            os << " " << (reducedProbabilities[i] * 100.0) << " % |\n";
+            std::cout << " " << (ReducedProbabilities[i] * 100.0) << " % |\n";
         }
     }
 };

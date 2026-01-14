@@ -19,32 +19,32 @@ namespace Gates
     constexpr matrix_t<ConstexprMath::pow2(QBitCount), ConstexprMath::pow2(QBitCount)>
         make_IQFT_matrix() noexcept
     {
-        constexpr dimension_t N = ConstexprMath::pow2(QBitCount);
-        constexpr double inv_sqrt_N = 1.0 / ConstexprMath::sqrt(static_cast<double>(N));
+        constexpr dimension_t Dim = ConstexprMath::pow2(QBitCount);
+        constexpr double InvSqrtDim = 1.0 / ConstexprMath::sqrt(static_cast<double>(Dim));
 
-        matrix_t<N, N> M{};
+        matrix_t<Dim, Dim> IQFTMatrix{};
 
-        for (dimension_t j = 0; j < N; ++j)
+        for (dimension_t j = 0; j < Dim; ++j)
         {
-            for (dimension_t k = 0; k < N; ++k)
+            for (dimension_t k = 0; k < Dim; ++k)
             {
                 // angle = 2π * j * k / N
-                const double angle =
+                const double Angle =
                     2.0 * ConstexprMath::Pi * static_cast<double>(j * k)
-                    / static_cast<double>(N);
+                    / static_cast<double>(Dim);
 
                 // For inverse QFT use the negative exponent:
                 // exp(-i * angle) = cos(angle) - i * sin(angle)
-                const double re = ConstexprMath::cos_constexpr(angle);
-                const double im = -ConstexprMath::sin_constexpr(angle);
+                const double re = ConstexprMath::cos(Angle);
+                const double im = -ConstexprMath::sin(Angle);
 
-                M[j][k] = cplx_t(
-                    inv_sqrt_N * re,
-                    inv_sqrt_N * im
+                IQFTMatrix[j][k] = cplx_t(
+                    InvSqrtDim * re,
+                    InvSqrtDim * im
                 );
             }
         }
 
-        return M;
+        return IQFTMatrix;
     }
 }

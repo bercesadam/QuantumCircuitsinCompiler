@@ -115,5 +115,13 @@ namespace ConstexprMath
             // Conjugate: invert the sign of the imaginary part.
             return { re, -im };
 		}
+
+		/// @brief Compute the squared magnitude (norm) of the complex number.
+		/// @return The squared norm (re^2 + im^2).
+        constexpr T normSquared() const noexcept
+        {
+            // Return the squared magnitude (norm) of the complex number.
+            return re * re + im * im;
+		}
     };
 }

@@ -17,7 +17,7 @@ int main()
     
     constexpr auto IQFT3 = Gates::make_IQFT_matrix<3>();
 
-    constexpr auto shorCircuit_N21_a2 =
+    constexpr auto ShorCircuit =
         QuantumCircuit<8>().withGates(
 
             // --------------------------------------------------
@@ -87,6 +87,6 @@ int main()
     // From the period r=6, we can deduce the nontrivial factors of 21:
     // gcd(2^(r/2)-1, 21) = gcd(7, 21) = 7
     // gcd(2^(r/2)+1, 21) = gcd(9, 21) = 3
-    shorCircuit_N21_a2.printProbabilities<0, 1, 2>();
+    ShorCircuit.printProbabilities<0, 1, 2>();
 }
 

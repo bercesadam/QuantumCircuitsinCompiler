@@ -19,12 +19,14 @@
 template<typename T>
 struct is_gate_matrix : std::false_type {};
 
+// Specialization for square matrices represented as nested std::array
 template<dimension_t N>
 struct is_gate_matrix<std::array<std::array<cplx_t, N>, N>> {
     static constexpr dimension_t dim = N;
 	static constexpr bool value = ConstexprMath::is_power_of_two(N);
 };
 
+/// C++17 style '_v' helper
 template<typename T>
 inline constexpr bool is_gate_matrix_v = is_gate_matrix<T>::value;
 
@@ -42,6 +44,7 @@ struct is_1_qbit_gate_matrix<
     static constexpr bool value = (is_gate_matrix<T>::dim == 2);
 };
 
+/// C++17 style '_v' helper
 template<typename T>
 inline constexpr bool is_1_qbit_gate_matrix_v = is_1_qbit_gate_matrix<T>::value;
 
@@ -60,27 +63,27 @@ template<auto M>
 constexpr bool is_unitary()
 {
 	// Get the matrix dimension from the type trait
-    constexpr dimension_t N = is_gate_matrix<std::remove_cvref_t<decltype(M)>>::dim;
+    constexpr dimension_t Dim = is_gate_matrix<std::remove_cvref_t<decltype(M)>>::dim;
 
 	// Epsilon for floating-point comparison
-    constexpr double epsilon = 1E-9;
+    constexpr double Epsilon = 1E-9;
 
 	// Check unitarity: M * M^† == I
-    for (dimension_t i = 0; i < N; i++)
-        for (dimension_t j = 0; j < N; j++)
+    for (dimension_t i = 0; i < Dim; i++)
+        for (dimension_t j = 0; j < Dim; j++)
         {
-            cplx_t sum{ 0,0 };
-            for (dimension_t k = 0; k < N; k++)
-                sum = sum + M[k][i].conj() * M[k][j];
+            cplx_t Sum{ 0,0 };
+            for (dimension_t k = 0; k < Dim; k++)
+                Sum = Sum + M[k][i].conj() * M[k][j];
 
             constexpr auto abs = [](double v) -> double
             {
                 return (v < 0.0) ? -v : v;
             };
 
-            if (i == j && (abs(sum.re - 1) > epsilon || abs(sum.im) > epsilon))
+            if (i == j && (abs(Sum.re - 1) > Epsilon || abs(Sum.im) > Epsilon))
                 return false;
-            if (i != j && (abs(sum.re) > epsilon || abs(sum.im) > epsilon))
+            if (i != j && (abs(Sum.re) > Epsilon || abs(Sum.im) > Epsilon))
                 return false;
         }
     return true;
@@ -89,11 +92,11 @@ constexpr bool is_unitary()
 /// @brief  Applies a unitary matrix to a state vector via matrix-vector multiplication.
 template<dimension_t Dim>
 constexpr state_vector_t<Dim>
-apply_unitary(const matrix_t<Dim, Dim>& U,
+applyUnitary(const matrix_t<Dim, Dim>& U,
     const state_vector_t<Dim>& v) noexcept
 {
     // Result initialized to zero amplitudes
-    state_vector_t<Dim> result{ cplx_t::zero() };
+    state_vector_t<Dim> Result{ cplx_t::zero() };
 
     // Standard matrix-vector product:
     // result[i] = sum_j U[i][j] * v[j]
@@ -103,9 +106,9 @@ apply_unitary(const matrix_t<Dim, Dim>& U,
         for (dimension_t j = 0; j < Dim; ++j)
         {
             // Multiply the matrix row by the vector and add
-            result[i] += U[i][j] * v[j];
+            Result[i] += U[i][j] * v[j];
         }
     }
 
-    return result;
+    return Result;
 }

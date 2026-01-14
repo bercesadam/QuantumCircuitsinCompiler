@@ -35,14 +35,14 @@ namespace ConstexprMath
     }
 
     /// @brief Floor function usable in constexpr
-    constexpr int floor_constexpr(double x) noexcept {
+    constexpr int floorConstexpr(double x) noexcept {
         int32_t i = static_cast<int32_t>(x);
         return (x < static_cast<double>(i)) ? (i - 1) : i;
     }
 
     /// @brief Polynomial approximation to sin(x) around 0
     /// Accurate for |x| <= π/4
-    constexpr double sin_poly(double x) noexcept {
+    constexpr double sinPoly(double x) noexcept {
         const double x2 = x * x;
         double result = x;
         double term = x;
@@ -56,7 +56,7 @@ namespace ConstexprMath
 
     /// @brief Polynomial approximation to cos(x) around 0
     /// Accurate for |x| <= π/4
-    constexpr double cos_poly(double x) noexcept {
+    constexpr double cosPoly(double x) noexcept {
         const double x2 = x * x;
         double result = 1.0;
         double term = -x2 / 2.0; result += term;      // -x^2/2!
@@ -72,36 +72,36 @@ namespace ConstexprMath
     /// @param x Input angle in radians
     /// @param xr Output reduced angle (by reference)
     /// @return Quadrant index 0..3
-    constexpr int reduce_quadrant(double x, double& xr) noexcept {
+    constexpr int reduceQuadrant(double x, double& xr) noexcept {
         // Map x to k*(π/2) + xr, xr in [-π/4, π/4]
-        double k = floor_constexpr((x + Pi / 4.0) / (Pi / 2.0));
+        double k = floorConstexpr((x + Pi / 4.0) / (Pi / 2.0));
         xr = x - k * (Pi / 2.0);
         int kmod4 = static_cast<int>(k) & 3; // quadrant modulo 4
         return kmod4;
     }
 
     /// @brief Constexpr sine with quadrant-aware range reduction
-    constexpr double sin_constexpr(double x) noexcept {
+    constexpr double sin(double x) noexcept {
         double xr;
-        int q = reduce_quadrant(x, xr);
+        int q = reduceQuadrant(x, xr);
         switch (q) {
-        case 0: return sin_poly(xr);
-        case 1: return cos_poly(xr);
-        case 2: return -sin_poly(xr);
-        case 3: return -cos_poly(xr);
+        case 0: return sinPoly(xr);
+        case 1: return cosPoly(xr);
+        case 2: return -sinPoly(xr);
+        case 3: return -cosPoly(xr);
         }
         return 0.0; // unreachable
     }
 
     /// @brief Constexpr cosine with quadrant-aware range reduction
-    constexpr double cos_constexpr(double x) noexcept {
+    constexpr double cos(double x) noexcept {
         double xr;
-        int q = reduce_quadrant(x, xr);
+        int q = reduceQuadrant(x, xr);
         switch (q) {
-        case 0: return cos_poly(xr);
-        case 1: return -sin_poly(xr);
-        case 2: return -cos_poly(xr);
-        case 3: return sin_poly(xr);
+        case 0: return cosPoly(xr);
+        case 1: return -sinPoly(xr);
+        case 2: return -cosPoly(xr);
+        case 3: return sinPoly(xr);
         }
         return 0.0; // unreachable
     }
