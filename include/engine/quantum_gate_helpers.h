@@ -92,7 +92,7 @@ constexpr bool is_unitary()
 /// @brief  Applies a unitary matrix to a state vector via matrix-vector multiplication.
 template<dimension_t Dim>
 constexpr state_vector_t<Dim>
-applyUnitary(const matrix_t<Dim, Dim>& U,
+applyUnitary(const matrix_t<Dim>& U,
     const state_vector_t<Dim>& v) noexcept
 {
     // Result initialized to zero amplitudes

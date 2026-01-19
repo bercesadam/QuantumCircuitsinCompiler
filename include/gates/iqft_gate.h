@@ -22,7 +22,7 @@ namespace Gates
         constexpr dimension_t Dim = ConstexprMath::pow2(QBitCount);
         constexpr double InvSqrtDim = 1.0 / ConstexprMath::sqrt(static_cast<double>(Dim));
 
-        matrix_t<Dim, Dim> IQFTMatrix{};
+        matrix_t<Dim> IQFTMatrix{};
 
         for (dimension_t j = 0; j < Dim; ++j)
         {

@@ -27,7 +27,7 @@ namespace Gates
         constexpr dimension_t Dim = ConstexprMath::pow2(QBitCount);
 
         // Zero-initialize and set the diagonal entries to 1.0
-        matrix_t<Dim, Dim> Identity = {};
+        matrix_t<Dim> Identity = {};
         for (dimension_t i = 0; i < Dim; ++i)
         {
             Identity[i][i] = cplx_t::fromReal(1.0);

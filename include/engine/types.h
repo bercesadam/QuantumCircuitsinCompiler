@@ -21,13 +21,15 @@ using cplx_t = ConstexprMath::Complex<double>;
 template<dimension_t StateCount>
 using state_vector_t = std::array<cplx_t, StateCount>;
 
-/// @brief Matrix type with compile-time fixed rows/columns.
-/// @tparam Rows  Number of rows.
-/// @tparam Cols  Number of columns.
-template<dimension_t Rows, dimension_t Cols>
-using matrix_t = std::array<std::array<cplx_t, Cols>, Rows>;
+/// @brief Probability vector with compile-time fixed size (array of doubles).
+template<dimension_t StateCount>
+using probability_vector_t = std::array<double, StateCount>;
 
-/// @brief Fixed-size list of qubit indices.
-/// @tparam QBitCount  Number of qubits in the list.
-template<index_t QBitCount>
-using qbit_list_t = std::array<dimension_t, QBitCount>;
+/// @brief Square matrix type 
+/// @tparam Rows  Number of rows and cols
+template<dimension_t Dim>
+using matrix_t = std::array<std::array<cplx_t, Dim>, Dim>;
+
+///
+template<index_t StateCount>
+using subspace_indices_t = std::array<dimension_t, StateCount>;

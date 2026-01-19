@@ -26,25 +26,25 @@ namespace ConstexprMath
      * arithmetic operators implemented in a constexpr-friendly way. It is
      * intentionally minimal (no exceptions, no heap allocations).
      */
-    template <std::floating_point T>
+    template <std::floating_point FloatType>
     struct Complex
     {
         /// @brief The real part of the complex number.
-        T re = 0.0;
+        FloatType re = 0.0;
         /// @brief The imaginary part of the complex number.
-        T im = 0.0;
+        FloatType im = 0.0;
 
         /// @brief Default constructor producing 0 + 0i.
         constexpr Complex() noexcept = default;
 
         /// @brief Construct a complex number from a real value (imaginary part = 0).
         /// @param r  Real part.
-        constexpr Complex(T r) noexcept : re(r), im(0.0) {}
+        constexpr Complex(FloatType r) noexcept : re(r), im(0.0) {}
 
         /// @brief Construct a complex number from real and imaginary parts.
         /// @param r  Real part.
         /// @param i  Imaginary part.
-        constexpr Complex(T r, T i) noexcept : re(r), im(i) {}
+        constexpr Complex(FloatType r, FloatType i) noexcept : re(r), im(i) {}
 
         /// @brief Return the additive identity 0 + 0i.
         /// @return Complex zero.
@@ -53,7 +53,7 @@ namespace ConstexprMath
         /// @brief Create a complex number from a real value (helper alias).
         /// @param r  Real part.
         /// @return Complex number r + 0i.
-        static constexpr Complex fromReal(T r) noexcept { return { r, 0.0 }; }
+        static constexpr Complex fromReal(FloatType r) noexcept { return { r, 0.0 }; }
 
         /// @brief Return the imaginary unit +i (0 + 1i).
         /// @return Complex representing i.
@@ -88,6 +88,13 @@ namespace ConstexprMath
             return { re - other.re, im - other.im };
         }
 
+        /// @brief Unitary minus
+        /// @return -this
+        constexpr Complex operator-() const noexcept
+        {
+            return { -re, -im };
+        }
+
         /// @brief Complex multiplication following (a+bi)*(c+di) = (ac - bd) + (ad + bc)i.
         /// @param other  The multiplier.
         /// @return The product.
@@ -96,6 +103,33 @@ namespace ConstexprMath
             // Compute using the standard formula to avoid temporaries where possible.
             return { re * other.re - im * other.im, re * other.im + im * other.re };
         }
+
+		/// @brief Scalar division.
+		/// @param scalar  The scalar divisor.
+		/// @return The quotient (this / scalar).
+        constexpr Complex operator/ (FloatType scalar) const noexcept
+        {
+            // Divide both parts by the scalar.
+            return { re / scalar, im / scalar };
+		}
+
+        /// @brief Complex division.
+        /// @param other The divider (complex).
+        /// @return this / other
+        constexpr Complex operator/(Complex other) const noexcept
+        {
+            // Denominator: |other|^2 = c^2 + d^2
+            const FloatType Denom =
+                other.re * other.re + other.im * other.im;
+
+            // (a+bi)(c-di)
+            return
+            {
+                (re * other.re + im * other.im) / Denom,
+                (im * other.re - re * other.im) / Denom
+            };
+        }
+
 
         /// @brief In-place addition (accumulate another complex into this).
         /// @param other  Value to add.
@@ -118,7 +152,7 @@ namespace ConstexprMath
 
 		/// @brief Compute the squared magnitude (norm) of the complex number.
 		/// @return The squared norm (re^2 + im^2).
-        constexpr T normSquared() const noexcept
+        constexpr FloatType normSquared() const noexcept
         {
             // Return the squared magnitude (norm) of the complex number.
             return re * re + im * im;
