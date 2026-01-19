@@ -67,7 +67,8 @@ namespace ConstexprMath
      *       the square root and is constexpr-friendly.
 	 */
     template <std::floating_point FloatType>
-    constexpr FloatType sqrt(FloatType x) {
+    constexpr FloatType sqrt(FloatType x)
+    {
         // Handle edge cases
         if (x < 0.0) return std::numeric_limits<FloatType>::quiet_NaN();
         if (x == 0.0 || x == std::numeric_limits<FloatType>::infinity()) return x;
@@ -81,5 +82,4 @@ namespace ConstexprMath
 
         return sqrtRec(x, x, 0.0, sqrtRec);
     }
-
 }
