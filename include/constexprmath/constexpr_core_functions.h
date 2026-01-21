@@ -3,6 +3,7 @@
 #include <limits>
 #include <cmath>
 
+
 /// @file
 /// @brief Small constexpr integer utilities used for dimensions and bit manipulations.
 ///
@@ -82,4 +83,26 @@ namespace ConstexprMath
 
         return sqrtRec(x, x, 0.0, sqrtRec);
     }
+
+    /// @brief Compute the exponential function using Taylor series expansion.
+    /// @param x The exponent value.
+    /// @param N The number of terms in the Taylor series (default is 20).
+    template <unsigned int Terms, std::floating_point FloatType>
+    constexpr FloatType exp_taylor(FloatType x)
+    {
+        FloatType sum = 1.0;
+        FloatType term = 1.0;
+        for (unsigned n = 1; n <= Terms; ++n)
+        {
+            term *= x / n;
+            sum += term;
+        }
+        return sum;
+    }
+
+    template <std::floating_point FloatType>
+    constexpr FloatType abs(FloatType x)
+    {
+        return (x < 0.0) ? -x : x;
+    };
 }

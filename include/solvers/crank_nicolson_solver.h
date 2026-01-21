@@ -1,7 +1,8 @@
 ﻿#pragma once
 
-#include "types.h"
-#include "hamiltonian.h"
+#include "core_types.h"
+#include "hamiltonian/hamiltonian.h"
+#include "wavefunction/state_vector.h"
 
 
 /// @file
@@ -83,7 +84,7 @@ static constexpr void buildCrankNicolsonMatrices(const Hamiltonian<Dim>& hamilto
 	const auto& H = hamiltonian.getMatrix();
 	const double hBar = hamiltonian.getConstants().hBar;
 
-	// i * dt / (2 ħ)
+	// i * dt / (2ħ)
 	const cplx_t Factor(0.0, dt / (2.0 * hBar));
 
 	for (dimension_t i = 0; i < Dim; ++i)
@@ -120,10 +121,10 @@ static constexpr void buildCrankNicolsonMatrices(const Hamiltonian<Dim>& hamilto
 /// exploiting the tridiagonal structure of the matrix. It is primarily
 /// used to construct the right-hand side of the Crank–Nicolson system.
 template<dimension_t Dim>
-static constexpr state_vector_t<Dim>
-multiplyTrigiagonal(const tridiagonal_matrix_t<Dim>& M,	const state_vector_t<Dim>& x) noexcept
+static constexpr StateVector<Dim>
+multiplyTrigiagonal(const tridiagonal_matrix_t<Dim>& M,	const StateVector<Dim>& x) noexcept
 {
-	state_vector_t<Dim> Result{ cplx_t::zero() };
+	StateVector<Dim> Result{ cplx_t::zero() };
 
 	for (dimension_t i = 0; i < Dim; ++i)
 	{
@@ -156,7 +157,7 @@ multiplyTrigiagonal(const tridiagonal_matrix_t<Dim>& M,	const state_vector_t<Dim
 ///
 /// The matrix is passed by value and modified internally.
 template<dimension_t Dim>
-constexpr state_vector_t<Dim> solveTridiagonal(tridiagonal_matrix_t<Dim> M, state_vector_t<Dim> d) noexcept
+constexpr StateVector<Dim> solveTridiagonal(tridiagonal_matrix_t<Dim> M, StateVector<Dim> psi) noexcept
 {
 	// --- FORWARD ELIMINATION ---
 	for (dimension_t i = 1; i < Dim; ++i)
@@ -168,20 +169,20 @@ constexpr state_vector_t<Dim> solveTridiagonal(tridiagonal_matrix_t<Dim> M, stat
 		M.b[i] = M.b[i] - w * M.c[i - 1];
 
 		// Update right-hand side
-		d[i] = d[i] - w * d[i - 1];
+		psi[i] = psi[i] - w * psi[i - 1];
 	}
 
 	// --- BACK SUBSTITUTION ---
-	state_vector_t<Dim> x{};
+	StateVector<Dim> Result{};
 
-	x[Dim - 1] = d[Dim - 1] / M.b[Dim - 1];
+	Result[Dim - 1] = psi[Dim - 1] / M.b[Dim - 1];
 
 	for (dimension_t i = Dim - 1; i-- > 0;)
 	{
-		x[i] = (d[i] - M.c[i] * x[i + 1]) / M.b[i];
+		Result[i] = (psi[i] - M.c[i] * Result[i + 1]) / M.b[i];
 	}
 
-	return x;
+	return Result;
 }
 
 
@@ -196,7 +197,7 @@ constexpr state_vector_t<Dim> solveTridiagonal(tridiagonal_matrix_t<Dim> M, stat
 ///   CrankNicolsonTimeEvolutionOperator<Dim> evol(hamiltonian, dt);
 ///   psi = evol(psi);
 template<dimension_t Dim>
-class CrankNicolsonTimeEvolutionOperator
+class CrankNicolsonSolver
 {
 	// Precomputed matrices
 	tridiagonal_matrix_t<Dim> m_A;
@@ -210,7 +211,7 @@ public:
 	/// @details
 	/// The constructor precomputes the Crank–Nicolson matrices A and B,
 	/// which are reused for each time step.
-	constexpr CrankNicolsonTimeEvolutionOperator(const Hamiltonian<Dim>& hamiltonian, double dt) noexcept
+	constexpr CrankNicolsonSolver(const Hamiltonian<Dim>& hamiltonian, double dt) noexcept
 	{
 		buildCrankNicolsonMatrices(hamiltonian, dt, m_A, m_B);
 	}
@@ -222,8 +223,8 @@ public:
 	/// @details
 	/// The function computes the right-hand side B · ψⁿ and then solves
 	/// the linear system A · ψⁿ⁺¹ = RHS, resulting in unitary time evolution.
-	constexpr state_vector_t<Dim>
-		operator()(const state_vector_t<Dim>& psi) const noexcept
+	constexpr StateVector<Dim>
+		operator()(const StateVector<Dim>& psi) const noexcept
 	{
 		// RHS = B · ψⁿ
 		auto rhs = multiplyTrigiagonal(m_B, psi);

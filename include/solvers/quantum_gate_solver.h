@@ -1,6 +1,7 @@
 #pragma once
-#include "types.h"
+#include "core_types.h"
 #include "quantum_gate_helpers.h"
+
 
 /// @file Quantum gate representation and application to state vectors.
 

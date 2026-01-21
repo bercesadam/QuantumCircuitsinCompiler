@@ -1,22 +1,14 @@
 ﻿#pragma once
-#include "quantum_gate.h"
-
 #include <iostream>
 #include <iomanip>
+
+#include "wavefunction/state_vector.h"
+#include "solvers/quantum_gate_solver.h"
+
 
 /// @file
 /// @brief Small executor and convenience API for composing and running quantum gates.
 ///
-/**
- * @details
- * `QuantumCircuit` is a lightweight compile-time helper to execute a sequence of
- * gate-like callables on an initialized state vector. The executor is templated
- * on the number of qubits and accepts any callable satisfying the `QuantumGateLike`
- * concept (i.e. callables that accept and return a `state_vector_t<N>`).
- */
-
-template<index_t QBitCount>
-class QuantumCircuit;
 
 /// @brief Concept for types that behave like a gate: they are callable with a state vector.
 /// @tparam GateType  Type to test.
@@ -36,15 +28,19 @@ concept QuantumGateLike =
 /// @brief Executor that schedules and runs a series of gate-like callables at compile-time (where possible).
 /// @tparam QBitCount  Number of qubits in the circuit.
 /// @tparam Gates      Variadic pack of gate-like callables accepted by the executor.
-template<dimension_t QBitCount, QuantumGateLike... Gates>
-class QuantumCircuitExecutor {
+template<dimension_t QBitCount>
+class QuantumCircuit {
+
+    /// @brief Precompute 2^QBitCount for convenience
+    constexpr dimension_t BasisStateCount = ConstexprMath::pow2(QBitCount);
 
     /// @brief The internal global state vector (amplitudes for 2^QBitCount basis states).
-    state_vector_t<ConstexprMath::pow2(QBitCount)> StateVector;
+    StateVector<BasisStateCount> _stateVector;
+
 
     /// @brief Construct executor and immediately execute provided gates.
     /// @param gates  Variadic list of gate-like callables to apply in order.
-    constexpr QuantumCircuitExecutor(const Gates& ... gates)
+    constexpr QuantumCircuitExecutor()
     {
         // Initialize to the |0...0> computational basis state
         StateVector = {};

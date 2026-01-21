@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <cstdint>
 
+
 /// @file
 /// @brief Constexpr-friendly trigonometric helpers used to build unitary gates.
 ///
