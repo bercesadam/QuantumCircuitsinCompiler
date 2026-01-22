@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "core_types.h"
-#include "potential_barrier.h"
+#include "softculomb_potential.h"
 
 
 ///@brief Constants used for contructing a Hamiltonian class instance
@@ -41,7 +41,7 @@ public:
 	}
 
 	// Design limitation: currently only one potential can be used to construct the Hamiltonian
-	constexpr Hamiltonian(const HamiltonConstants& constants, const PotentialBarrier& potential) noexcept
+	constexpr Hamiltonian(const HamiltonConstants& constants, const SoftCoulombPotential& potential) noexcept
 		: m_constants(constants)
 	{
 		// Initialize Hamiltonian matrix with zeros
@@ -78,7 +78,7 @@ public:
 
 	// Delegating constructor to allow default zero potential as convenience
 	constexpr Hamiltonian(const HamiltonConstants& constants) noexcept
-		: Hamiltonian(constants, PotentialBarrier())
+		: Hamiltonian(constants, SoftCoulombPotential())
 	{
 	}
 };

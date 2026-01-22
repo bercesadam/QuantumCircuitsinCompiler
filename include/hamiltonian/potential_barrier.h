@@ -20,11 +20,20 @@ public:
 	{
 	}
 
+	/// @brief Constructs a potential barrier
+	///
+	/// @param start   Start position
+	/// @param end     End position
+	/// @param v0      The constant potential energy
 	constexpr PotentialBarrier(double start, double end, double v0) noexcept
 		: m_Start(start), m_End(end), m_V0(v0)
 	{
 	}
 
+	/// @brief Evaluates the potential at a given spatial position.
+	///
+	/// @param x Spatial coordinate
+	/// @return Potential energy V(x)
 	constexpr double operator()(double position) const noexcept
 	{
 		if (position >= m_Start && position <= m_End)

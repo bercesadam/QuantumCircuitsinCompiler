@@ -130,7 +130,6 @@ namespace ConstexprMath
             };
         }
 
-
         /// @brief In-place addition (accumulate another complex into this).
         /// @param other  Value to add.
         /// @return A reference to *this after addition (returned by value here for constexpr convenience).

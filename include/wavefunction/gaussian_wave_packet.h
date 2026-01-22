@@ -5,15 +5,16 @@
 
 /// @brief Functor to generate a Gaussian wave packet state vector.
 /// @tparam Dim The dimension of the state vector to generate.
-///	@details This functor generates a Gaussian wave packet characterized by its
-///			center position (x0), central wave number (k0), and standard deviation (sigma).
-///			Returns a state vector of dimension Dim with complex amplitudes.
+/// @param x0     Center position
+/// @param k0     Central wave number 
+/// @param sigma  The standard deviation
+/// @param dx     Discretisation step
 template<dimension_t Dim>
 struct GaussianWavePacket
 {
 	constexpr StateVector<Dim> operator()(double x0, double k0, double sigma, double dx) const noexcept
 	{
-		StateVector<Dim> wavePacket = {};
+		StateVector<Dim> psi = {};
 
 		for (dimension_t n = 0; n < Dim; ++n)
 		{
@@ -30,11 +31,10 @@ struct GaussianWavePacket
 			const double imagPart = ConstexprMath::sin(k0 * x);
 
 			// Combine envelope and plane wave to form the complex amplitude
-			wavePacket[n] = cplx_t(envelope * realPart, envelope * imagPart);
+			psi[n] = cplx_t(envelope * realPart, envelope * imagPart);
 		}
 
-		wavePacket.normalize();
-
-		return wavePacket;
+		psi.normalize();
+		return psi;
 	}
 };

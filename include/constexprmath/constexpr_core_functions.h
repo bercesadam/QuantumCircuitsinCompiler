@@ -25,14 +25,6 @@ namespace ConstexprMath
      * @tparam UIntType  Unsigned integral type used for the exponent and result.
      * @param n          Exponent (non-negative).
      * @return 2^n as `UIntType`.
-     *
-     * @note The implementation uses a left bit-shift on `1` which is defined for
-     *       unsigned integral types and is constexpr-friendly.
-     *
-     * Example:
-     * @code
-     * constexpr auto four = ConstexprMath::pow2<std::size_t>(2); // four == 4
-     * @endcode
      */
     template <std::unsigned_integral UIntType>
     constexpr UIntType pow2(UIntType n) noexcept
@@ -100,6 +92,8 @@ namespace ConstexprMath
         return sum;
     }
 
+    /// @brief Compute absolute value of a number
+    /// @param x The input value 
     template <std::floating_point FloatType>
     constexpr FloatType abs(FloatType x)
     {

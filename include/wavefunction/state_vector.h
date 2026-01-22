@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "core_types.h"
 
 
@@ -7,43 +7,37 @@
 template <dimension_t HilbertDim>
 struct StateVector
 {
+	/// Underlying state vector array
 	state_vector_t<HilbertDim> m_StateVector;
 
 public:
-	constexpr state_vector_t<HilbertDim> getVector() const noexcept
-	{
-		return m_StateVector;
-	}
-
+	/// @brief Indexing operator
+	/// @return Reference to a complex number at the given state index
 	constexpr cplx_t& operator[](dimension_t index) noexcept
 	{
 		return m_StateVector.at(index);
 	}
 
+	/// @brief Indexing operator (const)
+	/// @return Const reference to a complex number at the given state index
 	constexpr const cplx_t& operator[](dimension_t index) const noexcept
 	{
 		return m_StateVector.at(index);
 	}
 
-	/// @brief Get the probabilities of measuring selected basis states.
-	/// @tparam SelectedStates  Indices of the basis states to get probabilities for.
-	/// @return A probability vector with the probabilities of the selected states.
-	template<dimension_t... SelectedStates>
-	constexpr probability_vector_t<HilbertDim> getProbabilities() noexcept
+	/// @brief Get the probabilities of measuring the selected basis states.
+	constexpr probability_vector_t<HilbertDim> getProbabilities() const noexcept
 	{
-		constexpr dimension_t NumSelected = sizeof...(SelectedStates);
-		constexpr subspace_indices_t<NumSelected> SelectedStateIndices = { SelectedStates... };
-		probability_vector_t<NumSelected> Probabilities = {};
-		for (dimension_t i : SelectedStateIndices)
+		probability_vector_t<HilbertDim> Probabilities;
+		for (int i = 0; i < HilbertDim; ++i)
 		{
-			const dimension_t StateIndex = SelectedStateIndices[i];
-			// Compute probability as the squared norm of the amplitude
-			Probabilities[i] = m_StateVector[StateIndex].normSquared();
+			Probabilities[i] = m_StateVector[i].normSquared();
 		}
 		return Probabilities;
 	}
 
-
+	/// @brief Normalizes the state vector (useful after initialization 
+	/// with wavefunction functors to keep |ψ|² = 1).
 	constexpr void normalize() noexcept
 	{
 		double normSquared = 0.0;
