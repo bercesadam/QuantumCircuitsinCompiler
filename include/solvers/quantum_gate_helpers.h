@@ -57,7 +57,7 @@ inline constexpr bool is_1_qbit_gate_matrix_v = is_1_qbit_gate_matrix<T>::value;
 /// This function computes the conjugate transpose (Hermitian adjoint) of `mat`,
 /// multiplies `mat` by its conjugate transpose and verifies that the product is
 /// equal to the identity matrix within exact arithmetic. Because this routine
-/// uses exact double checks for equality of re/im components, it is intended
+/// uses exact float_t checks for equality of re/im components, it is intended
 /// for constexpr / compile-time constructed matrices used as gates.
 template<auto M>
 constexpr bool is_unitary()
@@ -66,7 +66,7 @@ constexpr bool is_unitary()
     constexpr dimension_t Dim = is_gate_matrix<std::remove_cvref_t<decltype(M)>>::dim;
 
 	// Epsilon for floating-point comparison
-    constexpr double Epsilon = 1E-9;
+    constexpr float_t Epsilon = 1E-9;
 
 	// Check unitarity: M * M^† == I
     for (dimension_t i = 0; i < Dim; i++)
@@ -76,7 +76,7 @@ constexpr bool is_unitary()
             for (dimension_t k = 0; k < Dim; k++)
                 Sum = Sum + M[k][i].conj() * M[k][j];
 
-            constexpr auto abs = [](double v) -> double
+            constexpr auto abs = [](float_t v) -> float_t
             {
                 return (v < 0.0) ? -v : v;
             };

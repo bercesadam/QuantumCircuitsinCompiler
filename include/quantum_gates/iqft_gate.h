@@ -2,8 +2,7 @@
 #include "common_gates.h"
 #include "constexprmath/constexpr_trigon.h"
 
-
-namespace Gates
+namespace QCC::Gates
 {
     /**
      * @brief     Construct the inverse Quantum Fourier Transform (QFT†) dense matrix for QBitCount qubits.
@@ -20,7 +19,7 @@ namespace Gates
         make_IQFT_matrix() noexcept
     {
         constexpr dimension_t Dim = ConstexprMath::pow2(QBitCount);
-        constexpr double InvSqrtDim = 1.0 / ConstexprMath::sqrt(static_cast<double>(Dim));
+        constexpr float_t InvSqrtDim = 1.0 / ConstexprMath::sqrt(static_cast<float_t>(Dim));
 
         matrix_t<Dim> IQFTMatrix{};
 
@@ -29,14 +28,14 @@ namespace Gates
             for (dimension_t k = 0; k < Dim; ++k)
             {
                 // angle = 2π * j * k / N
-                const double Angle =
-                    2.0 * ConstexprMath::Pi * static_cast<double>(j * k)
-                    / static_cast<double>(Dim);
+                const float_t Angle =
+                    2.0 * ConstexprMath::Pi * static_cast<float_t>(j * k)
+                    / static_cast<float_t>(Dim);
 
                 // For inverse QFT use the negative exponent:
                 // exp(-i * angle) = cos(angle) - i * sin(angle)
-                const double re = ConstexprMath::cos(Angle);
-                const double im = -ConstexprMath::sin(Angle);
+                const float_t re = ConstexprMath::cos(Angle);
+                const float_t im = -ConstexprMath::sin(Angle);
 
                 IQFTMatrix[j][k] = cplx_t(
                     InvSqrtDim * re,

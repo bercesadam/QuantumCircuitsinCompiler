@@ -91,12 +91,12 @@ public:
         constexpr dimension_t ReducedDim = ConstexprMath::pow2(NumSelected);
 
         // Array to accumulate probabilities for each reduced basis state
-        std::array<double, ReducedDim> ReducedProbabilities = {};
+        std::array<float_t, ReducedDim> ReducedProbabilities = {};
 
         // Sum probabilities over all other qubits
         for (dimension_t i = 0; i < StateCount; ++i)
         {
-			double p = StateVector[i].normSquared();
+			float_t p = StateVector[i].normSquared();
 
             dimension_t ReducedIdx = 0;
             for (dimension_t b = 0; b < NumSelected; ++b)

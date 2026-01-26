@@ -20,7 +20,7 @@ namespace ConstexprMath
     /**
      * @brief Simple constexpr complex number for numeric computations.
      *
-     * @tparam T  Floating-point type to store real and imaginary parts (e.g. double).
+     * @tparam T  Floating-point type to store real and imaginary parts (e.g. float_t).
      *
      * The type exposes public data members `re` and `im` and lightweight
      * arithmetic operators implemented in a constexpr-friendly way. It is
@@ -66,13 +66,6 @@ namespace ConstexprMath
         /// @brief Component-wise addition.
         /// @param other  Addend.
         /// @return The sum (this + other).
-        ///
-        /// Example:
-        /// @code
-        /// Complex<double> a{1.0, 2.0};
-        /// Complex<double> b{0.5, -1.0};
-        /// auto c = a + b; // c == {1.5, 1.0}
-        /// @endcode
         constexpr Complex operator+ (Complex other) const noexcept
         {
             // Add real and imaginary parts separately.

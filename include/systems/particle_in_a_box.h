@@ -1,95 +1,88 @@
 ﻿#pragma once
-
+#include "core_types.h"
 #include "constexprmath/constexpr_trigon.h"
 
-#include "engine/state_vector.h"
-#include "engine/hamiltonian.h"
-#include "engine/gaussian_wave_packet.h"
-#include "engine/time_evolution_operator.h"
+#include "hamiltonian/hamiltonian.h"
+#include "hamiltonian/potential_barrier.h"
 
-// 
-#ifdef _WIN32
-#include <windows.h>
-#undef max
-#endif
+#include "wavefunction/gaussian_wave_packet.h"
+#include "wavefunction/hydrogen.h"
+#include "wavefunction/eigenstate.h"
+
+#include "solvers/crank_nicolson_solver.h"
 
 
-template<dimension_t Dim>
-void visualize(const state_vector_t<Dim>& s)
+namespace Ket
 {
-	static const char* bars[] = {
-	"\xE2\x96\x81", "\xE2\x96\x82", "\xE2\x96\x83",
-	"\xE2\x96\x84", "\xE2\x96\x85", "\xE2\x96\x86",
-	"\xE2\x96\x87", "\xE2\x96\x88"
+	/// @brief Configuration parameters for a one-dimensional particle in a box system.
+	/// @tparam SpatialDiscretizationStep  Number of spatial discretization steps (including boundaries).
+	/// @details As a design decision, this configuration struct was separated from the main quantum system class
+	/// as the classes which are used to construct an 1D box system (initial wavefunction, Hamiltonian) often require knowledge of
+	/// these parameters. This ensures that the same values are used consistently across all classes.
+	template<dimension_t SpatialDiscretizationStep>
+	struct OneDimensionalParticleBoxConfig
+	{
+		
+		// Number of spatial discretization steps
+		const dimension_t N = SpatialDiscretizationStep;
+		// Dirichlet boundary conditions
+		const dimension_t M = N - 2;
+
+		// Box length in meters
+		float_t L;
+		// Time step in seconds
+		float_t dt;
+		// Spatial discretization step in meters
+		float_t dx;
+
+		/// @brief Constructs a configuration for a one-dimensional particle in a box system.
+		/// @param boxLength    Length of the box.
+		/// @param timeStep     Time step size for evolution.
+		constexpr OneDimensionalParticleBoxConfig(float_t boxLength, float_t timeStep)
+			: L(boxLength), dt(timeStep), dx(boxLength / (SpatialDiscretizationStep - 1))
+		{
+		}
 	};
 
-	double maxProba = 0;
-	for (const cplx_t& a : s)
+	/// @brief One-dimensional particle in a box quantum system.
+	/// @tparam SpatialDiscretizationStep  Number of spatial discretization steps (including boundaries).
+	template<dimension_t SpatialDiscretizationStep>
+	class OneDimensionalParticleBox
 	{
-		maxProba = std::max(maxProba, a.normSquared());
-	}
+		//@brief Dimension of the state vector excluding boundary points
+		static constexpr dimension_t StateVectorDim = SpatialDiscretizationStep - 2;
 
-	std::cout << "Probability density: |";
-	for (const cplx_t& a : s)
-	{
-		double p = a.normSquared() / maxProba;
-		std::size_t idx = static_cast<std::size_t>(p * 7);
-		std::cout << bars[idx];
-	}
-	std::cout << "|\n";
+		//@brief Configuration of the particle in a box system
+		OneDimensionalParticleBoxConfig<SpatialDiscretizationStep> m_config;
 
-	std::cout << "Phase:               |";
-	for (const cplx_t& a : s)
-	{
-		double phase = std::atan2(a.im, a.re); // -π..π
-		double t = (phase + ConstexprMath::Pi) / (2 * ConstexprMath::Pi);
-		std::size_t idx = static_cast<std::size_t>(t * 5);
-		std::cout << bars[idx];
-	}
-	std::cout << "|\n";
-}
+		//@brief Hamiltonian operator of the system
+		Hamiltonian<StateVectorDim> m_hamiltonian;
 
+		//@brief State vector of the system containing only the inner points (Dirichlet BCs)
+		StateVector<StateVectorDim> m_psi;
 
-int main()
-{
-#ifdef _WIN32
-	SetConsoleOutputCP(CP_UTF8);
-#endif
+		//@brief Crank-Nicolson solver for time evolution
+		CrankNicolsonSolver<StateVectorDim> m_timeEvolutionSolver;
 
-	// box length
-	constexpr double L = 1.0;
-	constexpr unsigned int N = 50;
-	constexpr unsigned int M = N - 2; // Dirichlet peremfeltétel
+	public:
+		/// @brief Constructs a one-dimensional particle in a box system.
+		/// @param config        Configuration parameters for the system.
+		/// @param hamiltonian   Hamiltonian operator of the system.
+		/// @param stateVector   Initial state vector of the system.
+		constexpr OneDimensionalParticleBox(
+			const OneDimensionalParticleBoxConfig<SpatialDiscretizationStep>& config,
+			const Hamiltonian<StateVectorDim>& hamiltonian, const StateVector<StateVectorDim>& stateVector) noexcept
+			: m_config(config), m_hamiltonian(hamiltonian), m_psi(stateVector),
+			m_timeEvolutionSolver(hamiltonian, config.dt)
+		{
+		}
 
-	constexpr double x0 = 0.01;
-	constexpr double sigma = 0.1;
-	constexpr double k0 = 10 * ConstexprMath::Pi;
-
-	constexpr double dx = L / (N - 1);
-	constexpr double dt = 2E-4;
-
-	constexpr auto gaussianPacket = GaussianWavePacket<M>()(x0, k0, sigma, dx);
-
-	constexpr Potential potential{
-		0.45, 0.55, // potential wall in the middle
-		1500 // Joule
+		/// @brief Evolves the system by one time step using the Crank-Nicolson method.
+		constexpr StateVector<StateVectorDim> evolve() noexcept
+		{
+			m_psi = m_timeEvolutionSolver(m_psi);
+			return m_psi;
+		}
 	};
-	constexpr HamiltonConstants constants{
-		1.0,    // hBar
-		1.0,    // m
-		dx      // dx
-	};
-	constexpr auto hamiltonian = Hamiltonian<M>(constants, potential);
-
-	constexpr CrankNicolsonTimeEvolutionOperator<M> evol(hamiltonian, dt);
-
-	using namespace std::chrono_literals;
-	auto res = gaussianPacket;
-	while (true)
-	{
-		std::cout << "\x1B[2J\x1B[H";
-		visualize(res);
-		res = evol(res);
-
-		std::this_thread::sleep_for(100ms);
-	}
+} // namespace Ket
+	

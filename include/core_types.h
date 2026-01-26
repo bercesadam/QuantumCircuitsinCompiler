@@ -1,36 +1,54 @@
-#pragma once
+﻿#pragma once
 #include <array>
 #include "constexprmath/constexpr_complex.h"
 #include "constexprmath/constexpr_core_functions.h"
 
+namespace Ket
+{
+	/// @file
+	/// @brief Core type aliases used across the project: sizes, complex number type, vectors and matrices.
+	///
+	/// @details
+	/// - `dimension_t` and `index_t` are the unsigned integral types used for sizes and indices.
+	/// - `cplx_t` is the project's constexpr-capable complex type.
+	/// - `state_vector_t<N>` is a std::array of `cplx_t` with N elements representing amplitudes.
+	/// - `matrix_t<R,C>` is a 2D std::array representing a matrix of complex amplitudes.
+	/// - `qbit_list_t<QBitCount>` is a fixed-size array of qubit indices used to specify affected qubits.
+	using dimension_t = std::size_t;
+	using index_t = std::size_t;
 
-/// @file
-/// @brief Core type aliases used across the project: sizes, complex number type, vectors and matrices.
-///
-/// @details
-/// - `dimension_t` and `index_t` are the unsigned integral types used for sizes and indices.
-/// - `cplx_t` is the project's constexpr-capable complex type.
-/// - `state_vector_t<N>` is a std::array of `cplx_t` with N elements representing amplitudes.
-/// - `matrix_t<R,C>` is a 2D std::array representing a matrix of complex amplitudes.
-/// - `qbit_list_t<QBitCount>` is a fixed-size array of qubit indices used to specify affected qubits.
-using dimension_t = std::size_t;
-using index_t = std::size_t;
+	using float_t = double;
 
-using cplx_t = ConstexprMath::Complex<double>;
+	using cplx_t = ConstexprMath::Complex<float_t>;
 
-/// @brief State vector with compile-time fixed size (array of complex amplitudes).
-template<dimension_t StateCount>
-using state_vector_t = std::array<cplx_t, StateCount>;
+	/// @brief State vector with compile-time fixed size (array of complex amplitudes).
+	template<dimension_t StateCount>
+	using state_vector_t = std::array<cplx_t, StateCount>;
 
-/// @brief Probability vector with compile-time fixed size (array of doubles).
-template<dimension_t StateCount>
-using probability_vector_t = std::array<double, StateCount>;
+	/// @brief Probability vector with compile-time fixed size (array of doubles).
+	template<dimension_t StateCount>
+	using probability_vector_t = std::array<float_t, StateCount>;
 
-/// @brief Square matrix type 
-/// @tparam Rows  Number of rows and cols
-template<dimension_t Dim>
-using matrix_t = std::array<std::array<cplx_t, Dim>, Dim>;
+	/// @brief Square matrix type 
+	/// @tparam Rows  Number of rows and cols
+	template<dimension_t Dim>
+	using matrix_t = std::array<std::array<cplx_t, Dim>, Dim>;
 
-///
-template<index_t StateCount>
-using subspace_indices_t = std::array<dimension_t, StateCount>;
+	/// @brief Compact storage representation of a tridiagonal matrix for 1D Hamiltonians
+	/// as we have useful information only in the three non-zero diagonals and this way we
+	/// save memory by not storing Complex numbers of zero values
+	/// The storage size of the upper and lower diagonial is the same as the main diagonal
+	/// but the indicated values are never used.
+	/// The major index 0 corresponds to the superdiagonal,
+	///           index 1 corresponds to the main diagonal,
+	///       and index 2 corresponds to the subdiagonal.
+	template<dimension_t Dim>
+	using tridiagonal_matrix_t = std::array<std::array<cplx_t, Dim>, 3U>;
+
+	/// @brief Named constant indices for tridiagonal_matrix_t
+	/// for convenience and intuitive usage.
+	constexpr dimension_t SuperDiagonal = 0;
+	constexpr dimension_t MainDiagonal = 1;
+	constexpr dimension_t SubDiagonal = 2;
+
+}
