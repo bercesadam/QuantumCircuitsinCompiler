@@ -1,9 +1,7 @@
-#include <iostream>
+#include "systems/quantum_circuit.h"
+#include "visu/visu_proba_table.h"
 
-#include "engine/circuit.h"
-#include "gates/common_gates.h"
-#include "gates/iqft_gate.h"
-
+using namespace Ket::QCC;
 
 int main()
 {
@@ -16,6 +14,6 @@ int main()
         QuantumGate<1, Gates::H>().toBits(0),
         QuantumGate<2, Gates::CX>().toBits(0, 1));
 
-    BellStateCircuit.printProbabilities<0, 1>();
+    Ket::Visu::VisuProbaTable<4>().update<0, 1>(BellStateCircuit.getStateVector());
 }
 

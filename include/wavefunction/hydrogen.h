@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "core_types.h"
 #include "state_vector.h"
 
@@ -46,20 +46,44 @@ namespace Ket
 	};
 
 
-	/// @brief Generator functor for simplified 1D hydrogen-like orbital wavefunctions.
-	///
-	/// This class constructs a state vector that mimics the radial structure of
-	/// hydrogen atom orbitals, projected onto a one-dimensional spatial grid.
-	///
-	/// The implementation is intentionally simplified:
-	/// - Angular dependence is encoded via parity and polynomial factors
-	/// - Radial nodes are approximated using a Laguerre-like product
-	/// - The result is suitable for visualization, experimentation,
-	///   and constexpr evaluation rather than exact spectroscopy
+	/// @brief Helper function which computes the associated Laguerre polynomial L_p^(α)(x).
+	/// @param p     Degree of the polynomial (non-negative integer).
+	/// @param alpha Parameter of the polynomial (non-negative integer).
+	/// @param x     Point at which to evaluate the polynomial.
+	/// @return Value of the associated Laguerre polynomial L_p^(α)(x).
+	static constexpr double laguerre(unsigned p, unsigned alpha, double x) noexcept
+	{
+		if (p == 0) return 1.0;
+
+		double Lkm1 = 1.0;                   // L_0^(α)(x)
+		double Lk = 1.0 + alpha - x;       // L_1^(α)(x)
+
+		for (unsigned k = 1; k < p; ++k)
+		{
+			const double a = (2.0 * k + 1.0 + alpha - x);
+			const double b = (k + alpha);
+			const double Lk1 = (a * Lk - b * Lkm1) / (k + 1.0);
+			Lkm1 = Lk;
+			Lk = Lk1;
+		}
+		return Lk;
+	}
+
+
+	/// @brief  Construct a hydrogenic-like reduced radial wavefunction seed u(r) flattened to 1D.
+	/// @param  n     Principal quantum number n ≥ 1.
+	/// @param  l     Orbital angular momentum ℓ with 0 ≤ ℓ < n.
+	/// @param  a_eff Effective length scale a_eff > 0.
+	/// @param  dx    Grid spacing Δr.
+	/// @return       Reduced radial component u(r), normalized so that Σ |u|² · Δr = 1.
+	/// @details
+	///   This returns u(r) (1D) which depends only on (n, ℓ). The full wavefunction is
+	///   ψ_{nℓm}(r,θ,φ) = (u_{nℓ}(r)/r) · Y_{ℓm}(θ,φ). The Hamiltonian is m-independent
+	///   for central potentials; m enters only via the angular factor Y_{ℓm}.
 	///
 	/// @tparam Dim Size of the discrete spatial grid
 	template<dimension_t Dim>
-	struct HydrogenOrbitals
+	struct HydrogenOrbital
 	{
 		/// @brief Generates a hydrogen-like orbital wavefunction.
 		///
@@ -70,63 +94,42 @@ namespace Ket
 		///
 		/// @return Normalized quantum state vector representing the orbital
 		constexpr StateVector<Dim>
-			operator()(QuantumNumber q,
-				float_t a0, float_t dx,
-				float_t x0 = 0.0) const noexcept
+			operator()(QuantumNumber q, double a_eff, double dx) const noexcept
 		{
-			StateVector<Dim> psi{};
 			const unsigned int n = q.n();
 			const unsigned int l = q.l();
 
-			for (dimension_t i = 0; i < Dim; ++i)
+			StateVector<Dim> u{ cplx_t::zero() };
+
+			// Radial grid: r_i = i·dx, i = 0..Dim−1; u(0) remains 0
+			for (dimension_t i = 1; i < Dim; ++i)
 			{
-				// Spatial coordinate corresponding to grid index i
-				const float_t x = i * dx;
+				const double r = i * dx;
+				const double x = 2.0 * r / (n * a_eff);
 
-				// Radial distance from the atomic center
-				const float_t r = ConstexprMath::abs(x - x0);
+				// r^(ℓ+1)
+				double rpow = 1.0;
+				for (unsigned k = 0; k < l + 1; ++k) rpow *= r;
 
-				// --- Exponential decay term ---
-				//
-				// Models the asymptotic behavior of hydrogenic orbitals:
-				// exp(-r / (n * a0))
-				const float_t ExpPart =
-					ConstexprMath::exp_taylor<30>(-r / (n * a0));
+				// exp(−r / (n·a_eff))
+				const double expo = ConstexprMath::exp_taylor<30>(-r / (n * a_eff));
 
-				// --- Centrifugal-like polynomial prefactor ---
-				//
-				// Represents the r^l behavior near the origin caused
-				// by angular momentum
-				float_t PolyPart = 1.0;
-				for (unsigned k = 0; k < l; ++k)
-					PolyPart *= (r / (n * a0));
+				// Associated Laguerre: L_{n−ℓ−1}^(2ℓ+1)(x)
+				const unsigned p = n - l - 1;
+				const unsigned alpha = 2 * l + 1;
+				const double lag = laguerre(p, alpha, x);
 
-				// --- Radial nodes (simplified Laguerre analogue) ---
-				//
-				// Introduces (n - l - 1) radial nodes using a product form.
-				// This is not an exact Laguerre polynomial but preserves
-				// qualitative nodal structure.
-				float_t NodePart = 1.0;
-				for (unsigned k = 1; k <= n - l - 1; ++k)
-					NodePart *= (1.0 - r / (k * n * a0));
-
-				// Combined radial wavefunction value
-				float_t Value = ExpPart * PolyPart * NodePart;
-
-				// --- Parity handling ---
-				//
-				// Odd-l orbitals have antisymmetric parity in 1D projection
-				if (l % 2 == 1 && x < x0)
-					Value = -Value;
-
-				// Store as a purely real complex amplitude
-				psi[i] = cplx_t::fromReal(Value);
+				const double val = rpow * expo * lag;
+				u[i] = cplx_t::fromReal(val);
 			}
 
-			// Normalize the wavefunction to unit probability
-			psi.normalize();
+			// Enforce discrete radial normalization: Σ |u|² · Δr = 1
+			u.normalize_with_dx(dx);
 
-			return psi;
+			// Dirichlet at the outer endpoint
+			//u[Dim - 1] = cplx_t::zero();
+
+			return u;
 		}
 	};
 }

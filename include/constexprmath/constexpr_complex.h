@@ -97,6 +97,15 @@ namespace ConstexprMath
             return { re * other.re - im * other.im, re * other.im + im * other.re };
         }
 
+		/// @brief Scalar multiplication.
+		/// @param scalar  The scalar multiplier.
+		/// @return The product (this * scalar).
+        constexpr Complex operator* (FloatType scalar) const noexcept
+        {
+            // Scale both parts by the scalar.
+            return { re * scalar,  im * scalar };
+		}
+
 		/// @brief Scalar division.
 		/// @param scalar  The scalar divisor.
 		/// @return The quotient (this / scalar).

@@ -1,26 +1,72 @@
 #pragma once
+#include <iostream>
+#include "wavefunction/state_vector.h"
 
-#include "visu_iface.h"
 
 namespace Ket::Visu
 {
-	/// @brief Simple terminal-based probability table visualization implementation
+   	/// @brief Simple terminal-based probability table visualization implementation
 	/// @tparam Dim Dimension of the state vector
 	/// @detail Displays probability densities as a table of numerical values.
 	template<dimension_t Dim>
-	struct VisuProbaTable : public VisuIface<Dim>
+	struct VisuProbaTable
 	{
-		/// @brief Update the visualization with the current state vector
-		/// @param s Current state vector
-		void update(const StateVector<Dim>& s) override
-		{
-			const auto Probabilities = s.getProbabilities();
-			std::cout << "Probability densities:\n";
-			for (std::size_t i = 0; i < Dim; ++i)
-			{
-				std::cout << "State |" << i << ">: " << Probabilities[i] << "\n";
-			}
-			std::cout << std::endl;
-		}
+		/// @brief Print the measurement probabilities for the selected qubits.
+		/// @tparam SelectedQBits  Indices of the qubits to include in the probability table. 
+        template<dimension_t... SelectedQBits>
+        void update(const StateVector<Dim> s) const
+        {
+            constexpr dimension_t NumSelected = sizeof...(SelectedQBits);
+            constexpr qbit_list_t<NumSelected> SelectedQubits =
+                qbit_list_t<NumSelected>{ static_cast<dimension_t>(SelectedQBits)... };
+
+            // Format numbers
+            std::cout << std::fixed << std::setprecision(2);
+
+            // Number of qubits we are considering
+            constexpr dimension_t ReducedDim = ConstexprMath::pow2(NumSelected);
+
+   			// Get full state probabilities
+            probability_vector_t<Dim> probabilities = s.getProbabilities();
+
+            // Array to accumulate probabilities for each reduced basis state
+            probability_vector_t<ReducedDim> ReducedProbabilities = {};
+
+            // Sum probabilities over all other qubits
+            for (dimension_t i = 0; i < Dim; ++i)
+            {
+                float_t p = probabilities[i];
+
+                dimension_t ReducedIdx = 0;
+                for (dimension_t b = 0; b < NumSelected; ++b)
+                {
+                    const dimension_t q = SelectedQubits[b];
+                    if (i & (1ULL << q))
+                        ReducedIdx |= (1ULL << b);
+                }
+
+                ReducedProbabilities[ReducedIdx] += p;
+            }
+
+            // Print header
+            std::cout << "| Binary | Decimal | Probability (%) |\n";
+            std::cout << "|--------|---------|----------------|\n";
+
+            // Print reduced probabilities
+            for (dimension_t i = 0; i < ReducedDim; ++i)
+            {
+                // Binary string
+                std::cout << "|";
+                for (dimension_t b = NumSelected; b-- > 0;)
+                    std::cout << ((i & (1ULL << b)) ? '1' : '0');
+                std::cout << "|";
+
+                // Decimal
+                std::cout << " " << i << " |";
+
+                // Probability
+                std::cout << " " << (ReducedProbabilities[i] * 100.0) << " % |\n";
+            }
+        }
 	};
 } // namespace Ket::Visu

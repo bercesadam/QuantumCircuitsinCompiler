@@ -1,8 +1,7 @@
 #pragma once
-
 #include <chrono>
-#include <iostream>
 #include <thread>
+#include <iostream>
 
 #include "visu_iface.h"
 #include "wavefunction/state_vector.h"
@@ -12,8 +11,8 @@
 #undef max
 #endif
 
-namespace Ket::Visu {
-
+namespace Ket::Visu
+{
 	inline const char* phaseToColor(float_t phase)
 	{
 		constexpr float_t PI = 3.14159265358979323846f;
@@ -54,11 +53,17 @@ namespace Ket::Visu {
 			}
 
 			std::cout << "Probability density: |";
-			for (float_t p : Probabilities)
+			for (dimension_t i = 0; i < Probabilities.size(); ++i)
 			{
+				float_t p = Probabilities[i];
 				p /= MaxProba;
 				std::size_t idx = static_cast<std::size_t>(p * 7);
-				std::cout << bars[idx];
+				//std::cout << bars[idx];
+				
+				float_t phase = std::atan2(s[i].im, s[i].re);
+				const char* color = phaseToColor(phase);
+
+				std::cout << color << bars[idx] << "\x1B[0m";
 			}
 			std::cout << "|\n";
 

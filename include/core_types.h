@@ -29,6 +29,11 @@ namespace Ket
 	template<dimension_t StateCount>
 	using probability_vector_t = std::array<float_t, StateCount>;
 
+	/// @brief Fixed-size list of qubit indices.
+	/// @tparam QBitCount  Number of qubits in the list.
+	template<index_t QBitCount>
+	using qbit_list_t = std::array<dimension_t, QBitCount>;
+
 	/// @brief Square matrix type 
 	/// @tparam Rows  Number of rows and cols
 	template<dimension_t Dim>

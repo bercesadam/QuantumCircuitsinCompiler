@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "constexprmath/constexpr_core_functions.h"
 
 namespace Ket
@@ -49,6 +49,47 @@ namespace Ket
 
 			// Soft-Coulomb potential evaluation
 			return -m_Z / ConstexprMath::sqrt(dx * dx + m_a * m_a);
+		}
+	};
+
+	/// @brief Radial soft-Coulomb potential for spherically symmetric systems.
+	/// @details
+	/// This class implements a radial soft-Coulomb potential commonly used
+	/// in quantum simulations of atomic systems. The potential includes both
+	/// the Coulomb attraction term and the centrifugal barrier term for
+	/// angular momentum states.
+	class SoftCoulombRadialPotential
+	{
+		double m_Zeff;     // Effective nuclear charge Z_eff
+		double m_a;        // Softening parameter a > 0
+		unsigned m_l;      // Orbital quantum number ℓ ≥ 0
+		double m_hbar;     // ħ
+		double m_mu;       // Reduced mass μ
+
+	public:
+		constexpr SoftCoulombRadialPotential(double Zeff = 1.0,
+			double a = 2e-2,
+			unsigned l = 0,
+			double hbar = 1.0,
+			double mu = 1.0) noexcept
+			: m_Zeff(Zeff), m_a(a), m_l(l), m_hbar(hbar), m_mu(mu)
+		{
+		}
+
+		/// @brief  Evaluate V(r) at radius r.
+		/// @param  r   Radius r ≥ 0.
+		/// @return     Potential value V(r).
+		///
+		/// @details
+		/// Computation:
+		///   r² + a² → r2s
+		///   V(r) = −Z_eff / √(r2s)  +  ℓ(ℓ+1)·ħ² / (2μ·r2s)
+		constexpr double operator()(double r) const noexcept
+		{
+			const double SquareRadiusWithSoftening = r * r + m_a * m_a;  // r² + a²
+			const double CoulombAttraction = -m_Zeff / ConstexprMath::sqrt(SquareRadiusWithSoftening);
+			const double CentrifugalBarrier = (static_cast<double>(m_l) * (m_l + 1) * m_hbar * m_hbar) / (2.0 * m_mu * SquareRadiusWithSoftening);
+			return CoulombAttraction + CentrifugalBarrier;
 		}
 	};
 }

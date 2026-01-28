@@ -30,10 +30,12 @@ namespace Ket
 		constexpr probability_vector_t<HilbertDim> getProbabilities() const noexcept
 		{
 			probability_vector_t<HilbertDim> Probabilities;
+
 			for (int i = 0; i < HilbertDim; ++i)
 			{
 				Probabilities[i] = m_StateVector[i].normSquared();
 			}
+
 			return Probabilities;
 		}
 
@@ -54,26 +56,55 @@ namespace Ket
 				c = c / norm;
 			}
 		}
-		/*
-		/// @brief Compute the Kronecker product of this state vector with another.
-		/// @tparam OtherDim  Dimension of the other state vector.
-		/// @param other  The other state vector.
-		/// @return The Kronecker product state vector.
-		/// @note The resulting state vector has dimension HilbertDim * OtherDim
-		template<dimension_t OtherDim>
-		constexpr StateVector<Hilbertdim * OtherDim> kroneckerProduct(const StateVector<OtherDim>& other) const noexcept
+
+		/// @brief  Normalize a discrete wavefunction on a uniform spatial grid
+		///         so that ∑|ψᵢ|² · Δx = 1.
+		/// 
+		/// @tparam Dim     Dimension (number of grid points).
+		/// 
+		/// @param  psi     State vector representing ψ(x) or u(r) sampled on a 1D grid.
+		/// @param  dx      Grid spacing Δx (or Δr for radial problems).
+		/// 
+		/// @details Continuous quantum wavefunctions must satisfy the normalization condition:
+		///        ∫|ψ(x)|² dx = 1.
+		/// 
+		/// On a uniform discretized grid xᵢ = i·Δx, this integral becomes the Riemann sum:
+		///        ∑|ψᵢ|² · Δx ≈ 1.
+		/// 
+		/// Therefore the correct discrete normalization requires multiplying the sum of
+		/// squared magnitudes by Δx before taking the square root.
+		/// 
+		/// This routine computes:
+		///        norm² = ∑ |ψᵢ|²,
+		///        norm² ← norm² · Δx,
+		///        ψᵢ ← ψᵢ / √(norm²).
+		/// 
+		constexpr void normalize_with_dx(double dx) noexcept
 		{
-			StateVector<HilbertDim* OtherDim> Result;
-			for (dimension_t i = 0; i < HilbertDim; ++i)
+			double Norm2 = 0.0;
+
+			// Accumulate Σ |ψᵢ|²  
+			for (const cplx_t& c : m_StateVector)
 			{
-				for (dimension_t j = 0; j < OtherDim; ++j)
+				Norm2 += c.normSquared();
+			}
+
+			// Convert into discrete integral: Σ |ψᵢ|² · Δx
+			Norm2 *= dx;
+
+			// Guard against division by zero
+			if (Norm2 > 0.0)
+			{
+				const double Inv = 1.0 / ConstexprMath::sqrt(Norm2);
+
+				// Rescale all amplitudes so that Σ |ψᵢ|² · Δx = 1
+				for (cplx_t& c : m_StateVector)
 				{
-					Result[i * OtherDim + j] = m_StateVector[i] * other.m_StateVector[j];
+					c = c * Inv;
 				}
 			}
-			return Result;
 		}
-		*/
+
 		/// @brief Multiply this state vector by a matrix.
 		/// @param mat  The matrix to multiply with (HilbertDim x HilbertDim).
 		/// @return The resulting state vector.
