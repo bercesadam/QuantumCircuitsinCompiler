@@ -25,7 +25,7 @@ namespace Ket
 				// Gaussian envelope calculation 
 				// exp(-((x - x0)^2) / (4 * sigma^2))
 				const float_t exponent = -((x - x0) * (x - x0)) / (4.0 * sigma * sigma);
-				const float_t envelope = ConstexprMath::exp_taylor<20>(exponent);
+				const float_t envelope = ConstexprMath::exp<20>(exponent);
 
 				// Plane wave component calculation: cos(k0 * x) + i * sin(k0 * x)
 				const float_t realPart = ConstexprMath::cos(k0 * x);

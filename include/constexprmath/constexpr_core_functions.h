@@ -44,7 +44,7 @@ namespace ConstexprMath
      *       The operation is constexpr and does not allocate memory.
      */
     template <std::unsigned_integral UIntType>
-    constexpr bool is_power_of_two(UIntType x) noexcept
+    constexpr bool isPowerOfTwo(UIntType x) noexcept
     {
         // Fast test: powers of two have exactly one bit set.
         return x > 0 && (x & (x - 1)) == 0;
@@ -80,7 +80,7 @@ namespace ConstexprMath
     /// @param x The exponent value.
     /// @param N The number of terms in the Taylor series (default is 20).
     template <unsigned int Terms, std::floating_point FloatType>
-    constexpr FloatType exp_taylor(FloatType x)
+    constexpr FloatType exp(FloatType x)
     {
         FloatType sum = 1.0;
         FloatType term = 1.0;

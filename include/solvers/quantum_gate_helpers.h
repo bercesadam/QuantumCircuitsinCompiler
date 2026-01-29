@@ -24,7 +24,7 @@ namespace Ket::QCC
     template<dimension_t N>
     struct is_gate_matrix<std::array<std::array<cplx_t, N>, N>> {
         static constexpr dimension_t dim = N;
-        static constexpr bool value = ConstexprMath::is_power_of_two(N);
+        static constexpr bool value = ConstexprMath::isPowerOfTwo(N);
     };
 
     /// C++17 style '_v' helper

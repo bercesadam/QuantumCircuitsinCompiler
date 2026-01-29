@@ -112,7 +112,7 @@ namespace Ket
 				for (unsigned k = 0; k < l + 1; ++k) rpow *= r;
 
 				// exp(−r / (n·a_eff))
-				const double expo = ConstexprMath::exp_taylor<30>(-r / (n * a_eff));
+				const double expo = ConstexprMath::exp<30>(-r / (n * a_eff));
 
 				// Associated Laguerre: L_{n−ℓ−1}^(2ℓ+1)(x)
 				const unsigned p = n - l - 1;
