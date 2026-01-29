@@ -10,7 +10,7 @@ $$
 |\psi_{n+1}\rangle = U_n |\psi_n\rangle
 $$
 
-Since this is mathematically equivalent to Schrödinger evolution under a piecewise-constant Hamiltonian, the existing linear algebra abstractions, state vector representations, and operator formalism naturally generalized to support physical quantum systems governed by:
+Since this is mathematically equivalent to Schrödinger evolution under a piecewise-constant Hamiltonian, the existing linear algebra abstractions, state vector representations, and operator formalism naturally generalized to support physical quantum systems - currently discretized, 1D cases - governed by:
 
 $$
 i\hbar \frac{\partial \psi(t)}{\partial t} = H(t)\psi(t)
