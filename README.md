@@ -1,15 +1,82 @@
-# |Ψ⟩CC — Quantum Circuits in Compiler
 
-A fully `constexpr` quantum circuit emulator with zero hardcoded gate logic, executing quantum algorithms in **constant time** directly in your favourite modern C++ compiler.
+# |😾⟩ - Ket Cat (formerly |Ψ⟩CC — Quantum Circuits in Compiler)
 
-## Vision
+|😾⟩, pronounced as “Ket Cat”, is fully `constexpr` C++ framework for simulating quantum systems: logical quantum circuits and physical quantum mechanics under a shared mathematical foundation.
+The project was originally named |ψ⟩CC and began as a quantum circuit simulator: the original goal of the project was to evaluate quantum circuits at compile time, using constexpr C++ to compute the exact evolution of quantum state vectors under unitary gate operations. Formally, this corresponds to solving the Schrödinger equation in a finite-dimensional Hilbert space using discrete unitary operators:
 
-|Ψ⟩CC reimagines quantum computing by pushing quantum circuit simulation into the compile-time domain. By leveraging C++20's `constexpr` capabilities, I've built a quantum emulator that:
+$$
+|\psi_{n+1}\rangle = U_n |\psi_n\rangle
+$$
 
-- **Compiles to constant-time execution** — Quantum algorithms run entirely during compilation with zero runtime overhead. For that reason, no measurement is possible, everything runs fully deterministic (hence no noise or multiple shots implemented), the output is an idealistic probability distribution. Of course the project is mere a toy and made for the love of maths behind quantum mechanics without any serious intention.
-- **Zero hardcoded gate logic** — Gate implementations and applications are performed via a custom linear algebra engine, without classically implemented logical operations. 
-- **Template-driven design** — Type-safe quantum operations with full compile-time verification, including the check for unitary matrices via concepts.
-- **No external dependencies** — Pure C++ implementation with custom `constexpr` math utilities
+Since this is mathematically equivalent to Schrödinger evolution under a piecewise-constant Hamiltonian, the existing linear algebra abstractions, state vector representations, and operator formalism naturally generalized to support physical quantum systems governed by:
+$$
+i\hbar \frac{\partial \psi(t)}{\partial t} = H(t)\psi(t)
+$$
+As a result, the project evolved from a quantum circuit simulator into a unified quantum simulation framework, capable of modeling both logical and physical quantum systems. My main motivation was that I already had a strong, self-developed and fully constexpr math and linear algebra library in my hands, and I was seeking for more challenges. I have kept the original repo for historical purposes - the original |ψ⟩CC source code can be found under the tag v1.0.
+
+## Conceptual Framework
+
+This project is not intended to be a high-performance production simulator.  
+Instead, it serves as:
+* A conceptual bridge between **quantum circuits** and **physical quantum mechanics**
+* A didactic framework for understanding quantum state evolution
+* *A demonstration of advanced **type-driven design** and **compile-time verification** in modern C++
+
+At its core, |😾⟩ is built on a shared mathematical model:
+* Complex-valued state vectors representing elements of a Hilbert space
+* Linear operators acting on those states
+* Explicit, unitary time evolution
+
+Within this framework, two complementary quantum models are supported:
+
+### Quantum Circuit Model
+
+Discrete, gate-based evolution of logical qubits using unitary operators.
+This corresponds to the standard circuit model of quantum computation with zero classically hard-coded gate logic. Provides a library of basic quantum gates and also a few examples (Bell and GHZ state, Shor's algorithm and my fair quantum dice circuit).
+
+### Physical Quantum Mechanics Model
+
+Numerical simulation of wavefunctions evolving under time-dependent Hamiltonians, using stable integration schemes such as Crank–Nicolson.
+
+Both models reuse the same underlying types and abstractions; they differ only in how the evolution operators are constructed.
+
+Provides a library of wave functions (presenting quantum physics textbook examples, like eigenstates, Gaussian wave packets and Hydrogen orbitals), library and API to use separate potentials and potential barriers during Hamilton construction and an 1D Particle-in-a-box system as a quantum playground. Also features an 1D oscilloscope-like visualization with phase encoding where you can witness a Schrödinger time evolution directly in a terminal.
+
+## C++ Design and Type-Level Guarantees
+
+Beyond its mathematical foundations, the framework places strong emphasis on **type safety and compile-time correctness**, expoiting modern C++ language features extensively.
+
+Key strengths from a C++ perspective include:
+
+-   **Strong Type Safety**  
+    Quantum states, operators, and systems are represented using distinct, explicit types.  
+    Invalid compositions (e.g. applying incompatible operators or mismatched dimensions) are rejected at compile time rather than failing at runtime.
+    
+-   **Template-Based Dimensional Encoding**  
+    Hilbert space dimensionality and system sizes are encoded directly in template parameters, enabling the compiler to enforce algebraic consistency across operations.
+    
+-   **Concepts and Compile-Time Constraints**  
+    C++20 concepts are used to express mathematical requirements such as linearity, unitarity, and operator compatibility.  
+    This makes the code self-documenting and prevents misuse of abstractions.
+    
+-   **Type Traits and Static Introspection**  
+    Custom type traits are employed to reason about quantum objects at compile time, enabling conditional logic, specialization, and validation without runtime overhead.
+    
+-   **`constexpr` Evaluation and Zero Runtime Cost**  
+    Where applicable, quantum state evolution and operator application can be fully evaluated at compile time, eliminating runtime cost and enabling aggressive compiler optimization.
+    
+-   **Clear Separation of Abstraction Layers**  
+    The design cleanly separates:
+    
+    -   mathematical primitives,
+        
+    -   quantum evolution models,
+        
+    -   and system-level simulations  
+        while still sharing a unified type system.
+        
+
+Together, these features make the framework not only a quantum simulation environment, but also a demonstration of advanced **type-driven design**, **metaprogramming**, and **compile-time verification** techniques in modern C++.
 
 ## Getting Started
 
@@ -21,16 +88,3 @@ cmake ..
 cmake --build .
 ```
 
-## Project Structure
-
-```
-include/
-├── constexprmath/       # Compile-time math utilities
-├── engine/              # Core circuit and gate infrastructure
-└── gates/               # Quantum gate implementations
-
-src/
-├── bell_state.cpp       # Bell state example
-├── ghz_state.cpp        # GHZ state example
-└── shor_21_2.cpp        # Shor's algorithm example (21 = 3×7)
-```
