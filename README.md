@@ -9,9 +9,11 @@ $$
 $$
 
 Since this is mathematically equivalent to Schrödinger evolution under a piecewise-constant Hamiltonian, the existing linear algebra abstractions, state vector representations, and operator formalism naturally generalized to support physical quantum systems governed by:
+
 $$
 i\hbar \frac{\partial \psi(t)}{\partial t} = H(t)\psi(t)
 $$
+
 As a result, the project evolved from a quantum circuit simulator into a unified quantum simulation framework, capable of modeling both logical and physical quantum systems. My main motivation was that I already had a strong, self-developed and fully constexpr math and linear algebra library in my hands, and I was seeking for more challenges. I have kept the original repo for historical purposes - the original |ψ⟩CC source code can be found under the tag v1.0.
 
 ## Conceptual Framework
