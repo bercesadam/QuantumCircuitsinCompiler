@@ -32,11 +32,14 @@ namespace Ket::Visu
 	{
 		/// @brief Update the visualization with the current state vector
 		/// @param s Current state vector
-		void update(const StateVector<Dim>& s)
+		void update(const StateVector<Dim>& s, const bool cls = true)
 		{
 			using namespace std::chrono_literals;
 
-			std::cout << "\x1B[2J\x1B[H";
+			if (cls)
+			{
+				std::cout << "\x1B[2J\x1B[H";
+			}
 
 			static const char* bars[] = {
 			"\xE2\x96\x81", "\xE2\x96\x82", "\xE2\x96\x83",
