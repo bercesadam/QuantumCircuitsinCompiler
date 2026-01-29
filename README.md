@@ -40,7 +40,7 @@ This corresponds to the standard circuit model of quantum computation with zero 
 
 ### Physical Quantum Mechanics Model
 
-Numerical simulation of wavefunctions evolving under time-dependent Hamiltonians, using stable integration schemes such as Crank–Nicolson.
+Numerical simulation of wavefunctions evolving under time-dependent Hamiltonians, and a numerical PDE solver for the time-dependent Schrödinger equation.
 
 Both models reuse the same underlying types and abstractions; they differ only in how the evolution operators are constructed.
 
