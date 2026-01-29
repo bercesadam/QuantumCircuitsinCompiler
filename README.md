@@ -1,7 +1,7 @@
 
 # |😾⟩ - Ket Cat (formerly |Ψ⟩CC — Quantum Circuits in Compiler)
 
-|😾⟩, pronounced as “Ket Cat”, is fully `constexpr` C++ framework for simulating quantum systems: logical quantum circuits and physical quantum mechanics under a shared mathematical foundation.
+|😾⟩, pronounced as “Ket Cat”, is fully `constexpr` C++ framework for simulating quantum systems: **logical quantum circuits** and **physical quantum mechanics** under a shared mathematical foundation.
 The project was originally named |ψ⟩CC and began as a quantum circuit simulator: the original goal of the project was to evaluate quantum circuits at compile time, using constexpr C++ to compute the exact evolution of quantum state vectors under unitary gate operations. Formally, this corresponds to solving the Schrödinger equation in a finite-dimensional Hilbert space using discrete unitary operators:
 
 $$
@@ -77,6 +77,25 @@ Key strengths from a C++ perspective include:
         
 
 Together, these features make the framework not only a quantum simulation environment, but also a demonstration of advanced **type-driven design**, **metaprogramming**, and **compile-time verification** techniques in modern C++.
+
+## Limitations
+
+While |😾⟩ provides a unified and mathematically consistent framework for quantum simulation, several limitations should be noted:
+
+**Not a High-Performance Simulator**
+The framework prioritizes clarity, correctness, and type safety over raw performance.
+It is not optimized for large-scale systems or production-level numerical workloads.
+
+**Exponential State Growth**
+As with all explicit state-vector simulations, memory and computational complexity scale exponentially with system size. This limits practical simulations to relatively small Hilbert spaces.
+
+**Numerical Precision**
+Physical quantum simulations rely on floating-point arithmetic and discretization. While stable integration schemes are used, numerical error accumulation is unavoidable for long time evolutions or fine spatial grids.
+
+**Idealized Quantum Circuits**
+The circuit model assumes ideal unitary operations and does not model noise, decoherence, or hardware-specific effects.
+
+These limitations are deliberate design choices aligned with the project’s educational and exploratory goals.
 
 ## Getting Started
 
