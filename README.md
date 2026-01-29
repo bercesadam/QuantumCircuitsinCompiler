@@ -1,10 +1,10 @@
 
-# |😾⟩ - Ket Cat (formerly |Ψ⟩CC — Quantum Circuits in Compiler)
+# |😾⟩ - Ket Cat
 
 <center><img src="logo.png" alt="Alt text" width="300"></center>
 
 |😾⟩, pronounced as “Ket Cat”, is fully `constexpr` C++ framework for simulating quantum systems: **logical quantum circuits** and **physical quantum mechanics** under a shared mathematical foundation.
-The project was originally named |ψ⟩CC and began as a quantum circuit simulator: the original goal of the project was to evaluate quantum circuits at compile time, using constexpr C++ to compute the exact evolution of quantum state vectors under unitary gate operations. Formally, this corresponds to solving the Schrödinger equation in a finite-dimensional Hilbert space using discrete unitary operators:
+The project was originally named "|Ψ⟩CC — Quantum Circuits in Compiler" and began as a quantum circuit simulator: the original goal of the project was to evaluate quantum circuits at compile time, using constexpr C++ to compute the exact evolution of quantum state vectors under unitary gate operations. Formally, this corresponds to solving the Schrödinger equation in a finite-dimensional Hilbert space using discrete unitary operators:
 
 $$
 |\psi_{n+1}\rangle = U_n |\psi_n\rangle
@@ -24,7 +24,7 @@ This project is not intended to be a high-performance production simulator.
 Instead, it serves as:
 * A conceptual bridge between **quantum circuits** and **physical quantum mechanics**
 * A didactic framework for understanding quantum state evolution
-* *A demonstration of advanced **type-driven design** and **compile-time verification** in modern C++
+* A demonstration of advanced **type-driven design** and **compile-time verification** in modern C++
 
 At its core, |😾⟩ is built on a shared mathematical model:
 * Complex-valued state vectors representing elements of a Hilbert space
