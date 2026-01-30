@@ -3,8 +3,8 @@
 #include <thread>
 #include <iostream>
 
-#include "visu_iface.h"
 #include "wavefunction/state_vector.h"
+#include "constexprmath/constexpr_trigon.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -13,15 +13,28 @@
 
 namespace KetCat::Visu
 {
+	/// @brief Enum to specify whether to use phase encoding in visualization
+	enum class UsePhaseEncoding : bool
+	{
+		YES = true,
+		NO = false
+	};
+
+	/// @brief Enum to specify whether to clear the screen before updating visualization
+	enum class ClearScreen : bool
+	{
+		YES = true,
+		NO = false
+	};
+
+	/// @brief Map phase angle to ANSI color code
 	inline const char* phaseToColor(float_t phase)
 	{
-		constexpr float_t PI = 3.14159265358979323846f;
-
-		if (phase < -PI * 0.5f) return "\x1B[34m"; // s�t�tk�k
-		if (phase < -PI * 0.25f) return "\x1B[94m"; // vil�gosk�k
-		if (phase < PI * 0.25f) return "\x1B[97m"; // feh�r
-		if (phase < PI * 0.5f) return "\x1B[91m"; // halv�nypiros
-		return "\x1B[31m";                        // piros
+		if (phase < -ConstexprMath::Pi * 0.5) return "\x1B[34m";   // dark blue
+		if (phase < -ConstexprMath::Pi * 0.25) return "\x1B[94m";  // light blue
+		if (phase <  ConstexprMath::Pi * 0.25) return "\x1B[97m";  // white
+		if (phase <  ConstexprMath::Pi * 0.5) return "\x1B[91m";   // light red
+		return "\x1B[31m";                                         // red
 	}
 
 	/// @brief Simple terminal-based oscilloscope visualization implementation
@@ -32,11 +45,13 @@ namespace KetCat::Visu
 	{
 		/// @brief Update the visualization with the current state vector
 		/// @param s Current state vector
-		void update(const StateVector<Dim>& s, const bool cls = true)
+		void update(const StateVector<Dim>& s,
+			const UsePhaseEncoding usePhaseEncoding = UsePhaseEncoding::YES,
+			const ClearScreen cls = ClearScreen::YES) const
 		{
 			using namespace std::chrono_literals;
 
-			if (cls)
+			if (cls == ClearScreen::YES)
 			{
 				std::cout << "\x1B[2J\x1B[H";
 			}
@@ -60,13 +75,17 @@ namespace KetCat::Visu
 			{
 				float_t p = Probabilities[i];
 				p /= MaxProba;
-				std::size_t idx = static_cast<std::size_t>(p * 7);
-				//std::cout << bars[idx];
-				
-				float_t phase = std::atan2(s[i].im, s[i].re);
-				const char* color = phaseToColor(phase);
 
-				std::cout << color << bars[idx] << "\x1B[0m";
+				std::size_t idx = static_cast<std::size_t>(p * 7);
+				
+				if (usePhaseEncoding == UsePhaseEncoding::YES)
+				{
+					float_t phase = std::atan2(s[i].im, s[i].re);
+					const char* color = phaseToColor(phase);
+					std::cout << color;
+				}
+				
+				std::cout << bars[idx] << "\x1B[0m";
 			}
 			std::cout << "|\n";
 

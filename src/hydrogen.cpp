@@ -35,7 +35,7 @@ int main()
 			std::get<0>(orbital)
 		);
 		
-		Visu::VisuOscilloscope<cfg.M>().update(box.evolve(), false);
+		Visu::VisuOscilloscope<cfg.M>().update(box.evolve(), Visu::UsePhaseEncoding::NO, Visu::ClearScreen::NO);
 	}
 
 }

@@ -33,7 +33,7 @@ int main()
 	{
 		auto p = box.evolve();
 		p.normalize_with_dx(cfg.dx);
-		visu.update(p);
+		visu.update(p, Visu::UsePhaseEncoding::YES, Visu::ClearScreen::YES);
 	}
 
 }

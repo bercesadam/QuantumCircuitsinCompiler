@@ -5,7 +5,7 @@
 #include "hamiltonian/hamiltonian.h"
 #include "hamiltonian/potential_barrier.h"
 
-#include "wavefunction/gaussian_wave_pacKetCat.h"
+#include "wavefunction/gaussian_wave_packet.h"
 #include "wavefunction/hydrogen.h"
 #include "wavefunction/eigenstate.h"
 
