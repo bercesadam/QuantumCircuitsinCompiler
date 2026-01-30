@@ -56,15 +56,11 @@ Key strengths from a C++ perspective include:
 -   **Template-Based Dimensional Encoding**  
     Hilbert space dimensionality and system sizes are encoded directly in template parameters, enabling the compiler to enforce algebraic consistency across operations.
     
--   **Concepts and Compile-Time Constraints**  
+-   **Concepts, Type Traits and Compile-Time Constraints**  
     C++20 concepts are used to express mathematical requirements such as linearity, unitarity, and operator compatibility.  
-    This makes the code self-documenting and prevents misuse of abstractions.
-    
--   **Type Traits and Static Introspection**  
-    Custom type traits are employed to reason about quantum objects at compile time, enabling conditional logic, specialization, and validation without runtime overhead.
     
 -   **`constexpr` Evaluation and Zero Runtime Cost**  
-    Where applicable, quantum state evolution and operator application can be fully evaluated at compile time, eliminating runtime cost and enabling aggressive compiler optimization.
+    Where applicable, quantum state evolution and operator application can be fully evaluated at compile time, eliminating runtime cost.
     
 -   **Clear Separation of Abstraction Layers**  
     The design cleanly separates:
