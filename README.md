@@ -13,7 +13,7 @@ $$
 i\hbar \frac{\partial \psi(t)}{\partial t} = H(t)\psi(t)
 $$
 
-As a result, the project evolved from a quantum circuit simulator into a unified quantum simulation framework and capable of modeling both logical and physical quantum systems - currently supporting discretized, 1D cases. My main motivation was that I already had a strong, self-developed and fully constexpr math and linear algebra library in my hands, and I was seeking for more challenges. I have kept the original repo for historical purposes - the original |ψ⟩CC source code can be found under the tag v1.0, and hence I've kept also the original repo name even after the rebranding of the project.
+As a result, the project evolved from a quantum circuit simulator into a unified quantum simulation framework and capable of modeling both logical and physical quantum systems - currently supporting discretized, 1D cases. I have kept the original repo for historical purposes - the original |ψ⟩CC source code can be found under the tag v1.0, and hence I've kept also the original repo name even after the rebranding of the project.
 
 ## Conceptual Framework
 
@@ -41,7 +41,7 @@ Also provides a library of basic quantum gates and also a few examples (Bell and
 
 Numerical simulation of wavefunctions evolving under time-dependent Hamiltonians; a numerical PDE solver for the time-dependent Schrödinger equation.
 
-Also provides a library of predefined, configurable seed wave functions (presenting quantum physics textbook examples, like eigenstates, Gaussian wave packets and Hydrogen orbitals); library and API to construct potential fields and potential barriers during Hamilton construction; and a 1D Particle-in-a-box system as a quantum playground. Also features an 1D oscilloscope-like visualization with phase encoding where you can witness a Schrödinger time evolution directly in a terminal.
+Also provides a library of predefined, configurable seed wave functions (presenting quantum physics textbook examples, like eigenstates, Gaussian wave packets and Hydrogen orbitals); library and API to construct potential fields and potential barriers during Hamilton construction; and a 1D Particle-in-a-box system as a quantum playground. Also features an 1D oscilloscope-like visualization with phase encoding where you can witness a Schrödinger time evolution directly in a terminal, like how quantum tunneling works conceptually in SSD's or the radial nodes of a hydrogen atom’s electron cloud.
 
 ## C++ Design and Type-Level Guarantees
 
