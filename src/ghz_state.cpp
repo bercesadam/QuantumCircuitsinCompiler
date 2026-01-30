@@ -1,7 +1,7 @@
 #include "systems/quantum_circuit.h"
 #include "visu/visu_proba_table.h"
 
-using namespace Ket::QCC;
+using namespace KetCat::QCC;
 
 int main()
 {
@@ -15,6 +15,6 @@ int main()
         QuantumGate<2, Gates::CX>().toBits(0, 1),
         QuantumGate<2, Gates::CX>().toBits(1, 2));
 
-	Ket::Visu::VisuProbaTable<8>().update<0, 1, 2>(GHZStateCircuitTest.getStateVector());
+	KetCat::Visu::VisuProbaTable<8>().update<0, 1, 2>(GHZStateCircuitTest.getStateVector());
 }
 

@@ -2,7 +2,7 @@
 #include "core_types.h"
 #include "state_vector.h"
 
-namespace Ket
+namespace KetCat
 {
 	/// @brief Represents a pair of quantum numbers (n, l) using the spectroscopic notation:
 	/// - n : Principal quantum number (n >= 1), controls energy and radial extent

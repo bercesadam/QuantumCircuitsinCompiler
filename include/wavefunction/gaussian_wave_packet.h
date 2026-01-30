@@ -2,16 +2,16 @@
 #include "core_types.h"
 #include "state_vector.h"
 
-namespace Ket
+namespace KetCat
 {
-	/// @brief Functor to generate a Gaussian wave packet state vector.
+	/// @brief Functor to generate a Gaussian wave pacKetCat state vector.
 	/// @tparam Dim The dimension of the state vector to generate.
 	/// @param x0     Center position
 	/// @param k0     Central wave number 
 	/// @param sigma  The standard deviation
 	/// @param dx     Discretisation step
 	template<dimension_t Dim>
-	struct GaussianWavePacket
+	struct GaussianWavePacKetCat
 	{
 		constexpr StateVector<Dim> operator()(float_t x0, float_t k0, float_t sigma, float_t dx) const noexcept
 		{

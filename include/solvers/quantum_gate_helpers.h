@@ -1,7 +1,7 @@
 #pragma once
 #include "core_types.h"
 
-namespace Ket::QCC
+namespace KetCat::QCC
 {
     /// @file
     /// @brief Helpers for applying gate matrices and validating matrix properties.
@@ -52,7 +52,7 @@ namespace Ket::QCC
     /// @brief  Checks whether a provided square complex matrix is unitary.
     /// @tparam Dim     Dimension of the square matrix (2^k).
     /// @param mat      The matrix to check.
-    /// @return         True if mat * mat^† equals the identity, false otherwise.
+    /// @return         True if mat * mat^ï¿½ equals the identity, false otherwise.
     ///
     /// @details
     /// This function computes the conjugate transpose (Hermitian adjoint) of `mat`,
@@ -69,7 +69,7 @@ namespace Ket::QCC
         // Epsilon for floating-point comparison
         constexpr float_t Epsilon = 1E-9;
 
-        // Check unitarity: M * M^† == I
+        // Check unitarity: M * M^ï¿½ == I
         for (dimension_t i = 0; i < Dim; i++)
             for (dimension_t j = 0; j < Dim; j++)
             {

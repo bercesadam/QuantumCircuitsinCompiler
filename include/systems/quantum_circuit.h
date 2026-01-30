@@ -8,7 +8,7 @@
 #include "quantum_gates/common_gates.h"
 #include "quantum_gates/iqft_gate.h"
 
-namespace Ket::QCC
+namespace KetCat::QCC
 {
     /// @file
     /// @brief Small executor and convenience API for composing and running quantum gates.

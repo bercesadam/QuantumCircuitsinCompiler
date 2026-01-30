@@ -3,7 +3,7 @@
 #include "wavefunction/state_vector.h"
 
 
-namespace Ket::Visu
+namespace KetCat::Visu
 {
    	/// @brief Simple terminal-based probability table visualization implementation
 	/// @tparam Dim Dimension of the state vector
@@ -69,4 +69,4 @@ namespace Ket::Visu
             }
         }
 	};
-} // namespace Ket::Visu
+} // namespace KetCat::Visu

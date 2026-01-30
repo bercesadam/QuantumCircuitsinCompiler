@@ -5,7 +5,7 @@
 #include "visu/visu_oscilloscope.h"
 #include "systems/particle_in_a_box.h"
 
-using namespace Ket;
+using namespace KetCat;
 
 int main()
 {
@@ -22,7 +22,7 @@ int main()
 		 std::make_tuple(hydrogenCtor(QuantumNumber::_3d()), "3d")
 	};
 
-	constexpr Ket::float_t mass = 1.0;
+	constexpr KetCat::float_t mass = 1.0;
 	constexpr auto hamiltonian = Hamiltonian<cfg.M>(mass, cfg.dx, SoftCoulombRadialPotential());
 
 	for (const auto& orbital : hydrogenOrbitals)

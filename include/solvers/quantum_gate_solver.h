@@ -4,7 +4,7 @@
 #include "wavefunction/state_vector.h"
 
 
-namespace Ket::QCC
+namespace KetCat::QCC
 {
 	// Forward declaration of QuantumGate factory to befriend QuantumGateOp
 	template<dimension_t QBitCount, auto GateMatrix>

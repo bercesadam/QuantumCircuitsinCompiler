@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "core_types.h"
 
-namespace Ket
+namespace KetCat
 {
 	/// @brief Represents a quantum state vector in a Hilbert space of given dimension.
 	/// @tparam HilbertDim  Dimension of the Hilbert space (number of basis states).

@@ -2,7 +2,7 @@
 #include "core_types.h"
 #include "state_vector.h"
 
-namespace Ket::QCC
+namespace KetCat::QCC
 {
 	/// @brief Functor to generate computational basis states for QBitCount qubits.
 	/// @tparam QBitCount  Number of qubits.

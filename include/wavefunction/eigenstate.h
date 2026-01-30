@@ -2,7 +2,7 @@
 #include "core_types.h"
 #include "state_vector.h"
 
-namespace Ket
+namespace KetCat
 {
 	/// @brief Functor to generate the state vector corresponds with the Eigenstate
 	///		   of the zero potential 1D box (with Dirichlet boundaries).

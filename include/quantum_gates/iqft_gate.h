@@ -2,7 +2,7 @@
 #include "common_gates.h"
 #include "constexprmath/constexpr_trigon.h"
 
-namespace Ket::QCC::Gates
+namespace KetCat::QCC::Gates
 {
     /**
      * @brief     Construct the inverse Quantum Fourier Transform (QFT†) dense matrix for QBitCount qubits.

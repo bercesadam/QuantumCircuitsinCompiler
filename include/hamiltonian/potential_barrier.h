@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Ket
+namespace KetCat
 {
 	/// @brief Represents a potential function
 	/// @details This class defines a potential function that can be used

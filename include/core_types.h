@@ -3,7 +3,7 @@
 #include "constexprmath/constexpr_complex.h"
 #include "constexprmath/constexpr_core_functions.h"
 
-namespace Ket
+namespace KetCat
 {
 	/// @file
 	/// @brief Core type aliases used across the project: sizes, complex number type, vectors and matrices.

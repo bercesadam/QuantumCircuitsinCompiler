@@ -1,7 +1,7 @@
 #include "systems/quantum_circuit.h"
 #include "visu/visu_proba_table.h"
 
-using namespace Ket::QCC;
+using namespace KetCat::QCC;
 
 int main()
 {
@@ -85,6 +85,6 @@ int main()
     // From the period r=6, we can deduce the nontrivial factors of 21:
     // gcd(2^(r/2)-1, 21) = gcd(7, 21) = 7
     // gcd(2^(r/2)+1, 21) = gcd(9, 21) = 3
-    Ket::Visu::VisuProbaTable<256>().update<0, 1, 2>(ShorCircuit.getStateVector());
+    KetCat::Visu::VisuProbaTable<256>().update<0, 1, 2>(ShorCircuit.getStateVector());
 }
 

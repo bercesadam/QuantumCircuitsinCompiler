@@ -11,16 +11,16 @@
 #undef max
 #endif
 
-namespace Ket::Visu
+namespace KetCat::Visu
 {
 	inline const char* phaseToColor(float_t phase)
 	{
 		constexpr float_t PI = 3.14159265358979323846f;
 
-		if (phase < -PI * 0.5f) return "\x1B[34m"; // sötétkék
-		if (phase < -PI * 0.25f) return "\x1B[94m"; // világoskék
-		if (phase < PI * 0.25f) return "\x1B[97m"; // fehér
-		if (phase < PI * 0.5f) return "\x1B[91m"; // halványpiros
+		if (phase < -PI * 0.5f) return "\x1B[34m"; // sï¿½tï¿½tkï¿½k
+		if (phase < -PI * 0.25f) return "\x1B[94m"; // vilï¿½goskï¿½k
+		if (phase < PI * 0.25f) return "\x1B[97m"; // fehï¿½r
+		if (phase < PI * 0.5f) return "\x1B[91m"; // halvï¿½nypiros
 		return "\x1B[31m";                        // piros
 	}
 

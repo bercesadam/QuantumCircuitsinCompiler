@@ -2,7 +2,7 @@
 
 #include "core_types.h"
 
-namespace Ket::Visu
+namespace KetCat::Visu
 {
     /// @brief Represents a Hilbert space of a given dimension.
     /// @details This class encapsulates the concept of a Hilbert space

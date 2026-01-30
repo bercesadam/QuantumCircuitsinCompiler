@@ -4,7 +4,7 @@
 #include "hamiltonian/hamiltonian.h"
 #include "wavefunction/state_vector.h"
 
-namespace Ket
+namespace KetCat
 {
 	/// @file
 	/// @brief Crank–Nicolson solver for the time-dependent Schrödinger equation.

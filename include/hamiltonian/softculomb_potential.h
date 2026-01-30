@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "constexprmath/constexpr_core_functions.h"
 
-namespace Ket
+namespace KetCat
 {
 	/// @brief One-dimensional soft-Coulomb atomic potential.
 	///

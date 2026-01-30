@@ -2,7 +2,7 @@
 #include "core_types.h"
 #include "softculomb_potential.h"
 
-namespace Ket
+namespace KetCat
 {
 	// Reduced Planck's constant
 	// Using normalized units where ħ = 1 for simplicity

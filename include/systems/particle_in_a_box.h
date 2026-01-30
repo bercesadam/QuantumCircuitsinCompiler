@@ -5,14 +5,14 @@
 #include "hamiltonian/hamiltonian.h"
 #include "hamiltonian/potential_barrier.h"
 
-#include "wavefunction/gaussian_wave_packet.h"
+#include "wavefunction/gaussian_wave_pacKetCat.h"
 #include "wavefunction/hydrogen.h"
 #include "wavefunction/eigenstate.h"
 
 #include "solvers/crank_nicolson_solver.h"
 
 
-namespace Ket
+namespace KetCat
 {
 	/// @brief Configuration parameters for a one-dimensional particle in a box system.
 	/// @tparam SpatialDiscretizationStep  Number of spatial discretization steps (including boundaries).
@@ -84,5 +84,5 @@ namespace Ket
 			return m_psi;
 		}
 	};
-} // namespace Ket
+} // namespace KetCat
 	
