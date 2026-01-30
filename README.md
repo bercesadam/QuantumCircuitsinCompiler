@@ -1,22 +1,19 @@
-
-# |😾⟩ - Ket Cat
-
 <center><img src="logo.png" alt="Alt text" width="300"></center>
 
 |😾⟩, pronounced as “Ket Cat”, is fully `constexpr` C++ framework for simulating quantum systems: **logical quantum circuits** and **physical quantum mechanics** under a shared mathematical foundation.
-The project was originally named "|Ψ⟩CC — Quantum Circuits in Compiler" and began as a quantum circuit simulator: the original goal of the project was to evaluate quantum circuits at compile time, using constexpr C++ to compute the exact evolution of quantum state vectors under unitary gate operations. Formally, this corresponds to solving the Schrödinger equation in a finite-dimensional Hilbert space using discrete unitary operators:
+The project was originally named *'|Ψ⟩CC — Quantum Circuits in Compiler'* and began as a quantum circuit simulator: the original goal was to compute the evolution of quantum state vectors in constexpr time using unitary gate operations. Formally, this corresponds to solving the Schrödinger equation in a finite-dimensional Hilbert space using discrete unitary operators:
 
 $$
 |\psi_{n+1}\rangle = U_n |\psi_n\rangle
 $$
 
-Since this is mathematically equivalent to Schrödinger evolution under a piecewise-constant Hamiltonian, the existing linear algebra abstractions, state vector representations, and operator formalism naturally generalized to support physical quantum systems governed by:
+Since this is mathematically a special case of Schrödinger evolution under a piecewise-constant Hamiltonian, the existing linear algebra abstractions, state vector representations, and operator formalism naturally generalized to support the computation of time evolution of physical quantum systems described by the **time-dependent Schrödinger equation**:
 
 $$
 i\hbar \frac{\partial \psi(t)}{\partial t} = H(t)\psi(t)
 $$
 
-As a result, the project evolved from a quantum circuit simulator into a unified quantum simulation framework and capable of modeling both logical and physical quantum systems - currently supporting discretized, 1D cases. My main motivation was that I already had a strong, self-developed and fully constexpr math and linear algebra library in my hands, and I was seeking for more challenges. I have kept the original repo for historical purposes - the original |ψ⟩CC source code can be found under the tag v1.0.
+As a result, the project evolved from a quantum circuit simulator into a unified quantum simulation framework and capable of modeling both logical and physical quantum systems - currently supporting discretized, 1D cases. My main motivation was that I already had a strong, self-developed and fully constexpr math and linear algebra library in my hands, and I was seeking for more challenges. I have kept the original repo for historical purposes - the original |ψ⟩CC source code can be found under the tag v1.0, and hence I've kept also the original repo name even after the rebranding of the project.
 
 ## Conceptual Framework
 
@@ -30,21 +27,21 @@ At its core, |😾⟩ is built on a shared mathematical model:
 * Complex-valued state vectors representing elements of a Hilbert space
 * Linear operators acting on those states
 * Explicit, unitary time evolution
+* Easy to use API (see examples) both for circuit building and describing physical simulations
 
-Within this framework, two complementary quantum models are supported:
+Within this framework, two complementary quantum models are supported. Both models reuse the same underlying types and abstractions; they differ only in how the evolution operators are constructed:
 
 ### Quantum Circuit Model
 
 Discrete, gate-based evolution of logical qubits using unitary operators.
-This corresponds to the standard circuit model of quantum computation with zero classically hard-coded gate logic. Provides a library of basic quantum gates and also a few examples (Bell and GHZ state, Shor's algorithm and my fair quantum dice circuit).
+This corresponds to the standard circuit model of quantum computation with zero classically hard-coded gate logic
+Also provides a library of basic quantum gates and also a few examples (Bell and GHZ state, Shor's algorithm and my fair quantum dice circuit).
 
 ### Physical Quantum Mechanics Model
 
-Numerical simulation of wavefunctions evolving under time-dependent Hamiltonians, and a numerical PDE solver for the time-dependent Schrödinger equation.
+Numerical simulation of wavefunctions evolving under time-dependent Hamiltonians; a numerical PDE solver for the time-dependent Schrödinger equation.
 
-Both models reuse the same underlying types and abstractions; they differ only in how the evolution operators are constructed.
-
-Provides a library of wave functions (presenting quantum physics textbook examples, like eigenstates, Gaussian wave packets and Hydrogen orbitals), library and API to use separate potentials and potential barriers during Hamilton construction and an 1D Particle-in-a-box system as a quantum playground. Also features an 1D oscilloscope-like visualization with phase encoding where you can witness a Schrödinger time evolution directly in a terminal.
+Also provides a library of predefined, configurable seed wave functions (presenting quantum physics textbook examples, like eigenstates, Gaussian wave packets and Hydrogen orbitals); library and API to construct potential fields and potential barriers during Hamilton construction; and a 1D Particle-in-a-box system as a quantum playground. Also features an 1D oscilloscope-like visualization with phase encoding where you can witness a Schrödinger time evolution directly in a terminal.
 
 ## C++ Design and Type-Level Guarantees
 
