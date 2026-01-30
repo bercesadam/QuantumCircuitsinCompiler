@@ -34,7 +34,7 @@ Within this framework, two complementary quantum models are supported. Both mode
 ### Quantum Circuit Model
 
 Discrete, gate-based evolution of logical qubits using unitary operators.
-This corresponds to the standard circuit model of quantum computation with zero classically hard-coded gate logic
+This corresponds to the standard circuit model of quantum computation with zero classically hard-coded gate logic.
 Also provides a library of basic quantum gates and also a few examples (Bell and GHZ state, Shor's algorithm and my fair quantum dice circuit).
 
 ### Physical Quantum Mechanics Model
