@@ -1,4 +1,4 @@
-#Ket Cat - constexpr quantum emulator
+# Ket Cat - constexpr quantum emulator
 
 <center><img src="doc/logo.png" alt="The project logo" width="300" style="text-align:center"></center>
 
