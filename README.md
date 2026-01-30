@@ -40,19 +40,19 @@ This corresponds to the standard circuit model of quantum computation with zero 
 Also provides a library of basic quantum gates and also a few examples (Bell and GHZ state, Shor's algorithm and my fair quantum dice circuit).
 
 <img src="doc/shor.png" width="300" style="text-align:center">
-Example output of Shor's algorithm factoring 21
+_Example output of Shor's algorithm factoring 21_
 
 ### Physical Quantum Mechanics Model
 
 Numerical simulation of wavefunctions evolving under time-dependent Hamiltonians; a numerical PDE solver for the time-dependent Schrödinger equation. Currently it's specialized to 1D cases only, thus the calculation model heavily exploits the tridigonal structure of the discrete Laplacian in 1D. (There are plans to extend the functionality to more than one dimensions.)
 
 <img src="doc/hydrogen.png" width="500" style="text-align:center">
-Wave function plot of the orbitals of a hydrogen atom at specific excited states
+_Wave function plot of the orbitals of a hydrogen atom at specific excited states_
 
 Also provides a library of predefined, configurable seed wave functions (presenting quantum physics textbook examples, like eigenstates, Gaussian wave packets and Hydrogen orbitals); library and API to construct potential fields and potential barriers during Hamilton construction; and a 1D Particle-in-a-box system as a quantum playground. Also features an 1D oscilloscope-like visualization with phase encoding where you can witness a Schrödinger time evolution directly in a terminal, like how quantum tunneling works conceptually in SSD's or the radial nodes of a hydrogen atom’s electron cloud.
 
 <img src="doc/tunnel.png" width="500" style="text-align:center">
-Visualizing quantum tunnel effect on a gaussian wave packet, with phase colouring
+_Visualizing quantum tunnel effect on a gaussian wave packet, with phase colouring_
 
 ## C++ Design and Type-Level Guarantees
 
