@@ -27,13 +27,17 @@ int main()
 		gaussianPacKetCat
 	);
 	
-	Visu::VisuOscilloscope<cfg.M> visu;
+	Visu::VisuOscilloscope<cfg.M> visu(
+		Visu::UsePhaseEncoding::YES,
+		Visu::ClearScreen::YES,
+		Visu::ShowComplexParts::YES
+	);
 
 	while (true)
 	{
 		auto p = box.evolve();
 		p.normalize_with_dx(cfg.dx);
-		visu.update(p, Visu::UsePhaseEncoding::YES, Visu::ClearScreen::YES);
+		visu.update(p);
 	}
 
 }
