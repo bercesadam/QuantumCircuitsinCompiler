@@ -19,9 +19,16 @@ namespace KetCat
 	// Type alias for the electron configuration array, which holds the electron counts for each shell/subshell.
 	using electron_config_t = std::array<ElectronShell, MAX_SHELLS>;
 
+	enum class IonizationState : natural_t
+	{
+		Neutral = 0,
+		SinglePositive = 1
+	};
+
 	/// @brief Atom class template to store basic atomic information and electron configuration for seed wavefunction generation.
 	/// @tparam E Element type (e.g. Element::Li, Element::Na)
-	template <Element E>
+	/// @tparam I Ionization state
+	template <Element Elm, IonizationState Ionization>
 	class Atom
 	{
 		// @brief Internal struct to hold the electron configuration and outer shell index for the atom.
@@ -42,19 +49,28 @@ namespace KetCat
 			natural_t m_OuterShellIndex;
 		};
 
+		static constexpr electron_config_t calculateElectronConfiguration()
+		{
+
+		}
+
+		static constexpr real_t calculateEffectiveCharge()
+		{
+
+		}
+
+		static constexpr real_t calculateEffectiveBohrRadius()
+		{
+
+		}
+
 		///@brief Calculate the electron configuration for a given element based on its atomic number Z.
 		static constexpr AtomData generateConfig()
 		{
 			AtomData Data{};
 
 			// Store the atomic number in the data struct
-			Data.m_Z = AtomicNumber<E>::value;
-
-			// Calculate effective Bohr radius
-			// WARNING! Defining it as equal to the Bohr radius as currently this is used only
-			// for the calculation of Hydrogenic like radial orbitals in Rydberg states,
-			// where the effective Bohr radius is close to the actual Bohr radius.
-			Data.m_Aeff = 1.0;
+			Data.m_Z = AtomicNumber<Elm>::value;
 
 			// Temporary struct to represent a subshell with its quantum numbers (n, l).
 			struct SubshellStub { natural_t n, l; };
@@ -77,7 +93,8 @@ namespace KetCat
 
 			// The atomic number Z corresponds to the total number of electrons in a neutral atom,
 			// which is equal to the underlying value of the Element enum.
-			natural_t Remaining = Data.m_Z;
+			// If the ionization state is not neutral, we subtract the number of electrons corresponding to the ionization state.
+			natural_t Remaining = Data.m_Z - std::to_underlying(Ionization);
 
 			for (natural_t i = 0; i < std::size(Aufbau); ++i)
 			{
@@ -96,6 +113,10 @@ namespace KetCat
 				Remaining -= NoElectrons;
 				Data.m_OuterShellIndex = i; 
 			}
+
+
+			// Calculate effective Bohr radius
+			Data.m_Aeff = calculateEffectiveBohrRadius();
 
 			return Data;
 		}

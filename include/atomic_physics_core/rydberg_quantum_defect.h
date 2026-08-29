@@ -6,6 +6,14 @@
 
 namespace KetCat
 {
+
+    struct RydbergRitzTerms
+    {
+        real_t m_delta0 = 0.0;
+        real_t m_delta2 = 0.0;
+        real_t m_delta4 = 0.0;
+    };
+
     /// @brief Quantum defects for alkali atoms (s, p, d, f states) based on experimental data.
     /// 
     /// @details The quantum defect δₗ modifies the effective principal quantum number n* = n - δₗ,
