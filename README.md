@@ -1,3 +1,5 @@
+*NEWS:* Currently a trapped ion simulation is developed as an extension of the framework, see the TrappedIonQC branch for updates.
+
 # KetCat
 
 **Ab Initio Neutral Atom Quantum Computer Emulator**  
